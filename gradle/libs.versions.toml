@@ -20,6 +20,8 @@ androidTools = "31.3.0"
 appcompat = "1.7.0"
 material = "1.12.0"
 
+metamaskSDK = "0.6.6"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -45,6 +47,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", v
 
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 
+metamask-android-sdk = { group = "io.metamask.androidsdk", name = "metamask-android-sdk", version.ref = "metamaskSDK" }
 
 # Local Plugin denp
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -67,4 +70,4 @@ fair-android-application-compose = { id = "fair.android.application.compose", ve
 fair-android-library-compose = { id = "fair.android.library.compose", version = "unspecified" }
 fair-android-library-core = { id = "fair.android.library.core", version = "unspecified" }
 fair-android-hilt = { id = "fair.android.hilt", version = "unspecified" }
-
+fair-android-metamask = { id = "fair.android.metamask", version = "unspecified" }

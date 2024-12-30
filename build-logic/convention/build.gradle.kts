@@ -56,5 +56,9 @@ gradlePlugin {
             id = "fair.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
+        register("androidMetamaskLibrary") {
+            id = "fair.android.metamask"
+            implementationClass = "AndroidMetamaskConventionPlugin"
+        }
     }
 }
