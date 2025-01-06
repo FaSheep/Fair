@@ -21,8 +21,11 @@ class EthereumRepository @Inject constructor(
     val chainId: Flow<String> = _ethereumFlow.map { it.sessionId }.distinctUntilChanged()
 
     // Wrapper function to connect the dapp.
-    suspend fun connect(): Result {
-        return ethereum.connect()
+    suspend fun connect(): Boolean {
+        return when (ethereum.connect()) {
+            is Result.Success -> true
+            is Result.Error -> false
+        }
     }
 
     // Wrapper function call all RPC methods.

@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.fair.android.library)
     alias(libs.plugins.fair.android.library.compose)
     alias(libs.plugins.fair.android.hilt)
-    alias(libs.plugins.fair.android.metamask)
 }
 
 android {

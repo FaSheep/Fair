@@ -70,4 +70,3 @@ fair-android-application-compose = { id = "fair.android.application.compose", ve
 fair-android-library-compose = { id = "fair.android.library.compose", version = "unspecified" }
 fair-android-library-core = { id = "fair.android.library.core", version = "unspecified" }
 fair-android-hilt = { id = "fair.android.hilt", version = "unspecified" }
-fair-android-metamask = { id = "fair.android.metamask", version = "unspecified" }
