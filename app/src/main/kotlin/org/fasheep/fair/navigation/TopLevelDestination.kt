@@ -2,6 +2,7 @@ package org.fasheep.fair.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -10,5 +11,6 @@ enum class TopLevelDestination(
     val description: String
 ) {
     CARD(Icons.Default.Add, "card"),
-    VOTE(Icons.Default.Search, "vote")
+    VOTE(Icons.Default.Search, "vote"),
+    SORTITION(Icons.Default.Done, "sortition")
 }

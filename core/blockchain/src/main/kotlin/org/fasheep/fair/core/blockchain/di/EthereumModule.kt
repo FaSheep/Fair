@@ -12,18 +12,15 @@ import io.metamask.androidsdk.DefaultLogger
 import io.metamask.androidsdk.Ethereum
 import io.metamask.androidsdk.EthereumFlow
 import io.metamask.androidsdk.EthereumFlowWrapper
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal object EthereumModule {
-    @Singleton
     @Provides
     fun provideEthereum(@ApplicationContext context: Context): Ethereum {
         return Ethereum(context, DappMetadata("Fair", "https://www.fasheep.xyz"), null, DefaultLogger)
     }
 
-    @Singleton
     @Provides
     fun provideEthereumFlow(ethereum: Ethereum): EthereumFlow {
         return EthereumFlow(ethereum)

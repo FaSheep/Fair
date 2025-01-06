@@ -1,20 +1,24 @@
 package org.fasheep.fair.core.blockchain
 
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.metamask.androidsdk.EthereumFlowWrapper
 import io.metamask.androidsdk.EthereumRequest
 import io.metamask.androidsdk.EthereumState
 import io.metamask.androidsdk.Result
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@HiltViewModel
-class EthereumFlowViewModel @Inject constructor(
+@Singleton
+class EthereumRepository @Inject constructor(
     private val ethereum: EthereumFlowWrapper
-): ViewModel() {
+) {
+    private val _ethereumFlow: Flow<EthereumState> = ethereum.ethereumState
 
-    val ethereumFlow: Flow<EthereumState> get() = ethereum.ethereumState
+    val isConnected: Flow<Boolean> = _ethereumFlow.map { it.selectedAddress.isNotEmpty() }.distinctUntilChanged()
+    val selectedAddress: Flow<String> = _ethereumFlow.map { it.selectedAddress }.distinctUntilChanged()
+    val chainId: Flow<String> = _ethereumFlow.map { it.sessionId }.distinctUntilChanged()
 
     // Wrapper function to connect the dapp.
     suspend fun connect(): Result {
