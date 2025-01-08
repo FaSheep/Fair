@@ -54,7 +54,7 @@ class EthereumRepository @Inject constructor(
             }
 
             else -> {
-                Log.d(TAG, "getRand: Fail")
+                Log.e(TAG, "getRand: Fail")
                 "Fail"
             }
         }
@@ -79,7 +79,7 @@ class EthereumRepository @Inject constructor(
             }
 
             else -> {
-                Log.d(TAG, "tran: Fail")
+                Log.e(TAG, "tran: Fail")
                 "Fail"
             }
         }
@@ -101,7 +101,7 @@ class EthereumRepository @Inject constructor(
             }
 
             else -> {
-                Log.d(TAG, "estimate: Fail")
+                Log.e(TAG, "estimate: Fail")
                 "0x7000"
             }
         }
