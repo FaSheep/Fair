@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import org.fasheep.fair.feature.sortition.SortitionRoute
 import org.fasheep.fair.feature.sortition.SortitionScreen
 
 const val SORTITION_ROUTE = "sortition_route"
@@ -15,6 +16,6 @@ fun NavGraphBuilder.sortitionScreen() {
     composable(
         route = SORTITION_ROUTE
     ) {
-        SortitionScreen()
+        SortitionRoute()
     }
 }
