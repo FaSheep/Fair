@@ -5,5 +5,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.android.library) apply false
 //    alias(libs.plugins.ksp) apply false
-    id("com.google.dagger.hilt.android") version "2.51" apply false
+    alias(libs.plugins.google.dagger) apply false
+    alias(libs.plugins.apollographql.apollo) apply false
 }
