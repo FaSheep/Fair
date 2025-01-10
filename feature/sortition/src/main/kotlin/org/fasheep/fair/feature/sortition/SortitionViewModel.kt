@@ -4,21 +4,28 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.fasheep.fair.core.blockchain.EthereumRepository
+import org.fasheep.fair.core.network.GraphRepository
 import javax.inject.Inject
+
+private const val TAG = "SortitionVM"
 
 @HiltViewModel
 class SortitionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val ethereumRepository: EthereumRepository
+    private val ethereumRepository: EthereumRepository,
+    private val graphRepository: GraphRepository
 ) : ViewModel() {
-    val isConnected = ethereumRepository.isConnected
-    val selectAddress = ethereumRepository.selectedAddress
+    val isConnected = ethereumRepository.isConnected.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    val selectAddress = ethereumRepository.selectedAddress.stateIn(viewModelScope, SharingStarted.Eagerly, "")
     private val _num: MutableStateFlow<String> = MutableStateFlow("N/A")
-    val num: Flow<String> = _num
+    val num: StateFlow<String> = _num
 
     fun connect() {
         viewModelScope.launch {
@@ -32,9 +39,26 @@ class SortitionViewModel @Inject constructor(
         }
     }
 
-    fun tranRand(){
+    fun tranRand() {
         viewModelScope.launch {
-            ethereumRepository.tran()
+            val transactionHash = ethereumRepository.tran()
+            _num.value = ".."
+            delay(1000)
+            _num.value = "..."
+            delay(1000)
+            if (transactionHash == null) {
+                _num.value = "N/A"
+                return@launch
+            }
+            _num.value = ".."
+            var temp = graphRepository.findNumById(transactionHash)
+            for (i in 1..10) {
+                if (temp != null) break
+                delay(1000)
+                _num.value = if (i % 2 == 0) ".." else "..."
+                temp = graphRepository.findNumById(transactionHash)
+            }
+            _num.value = temp ?: "N/A"
         }
     }
 }

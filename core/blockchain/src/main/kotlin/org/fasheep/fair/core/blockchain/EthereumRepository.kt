@@ -60,10 +60,14 @@ class EthereumRepository @Inject constructor(
         }
     }
 
-    suspend fun tran(seed: Long = System.currentTimeMillis()): String {
+    suspend fun requestAccount() {
+        val request = EthereumRequest(method = EthereumMethod.WALLET_REQUEST_PERMISSIONS.value)
+        ethereum.connectWith(request)
+    }
+
+    suspend fun tran(seed: Long = System.currentTimeMillis()): String? {
         val data = String.format("0xd583e0b8%064x", seed)
         val params = mapOf(
-            "from" to ethereum.selectedAddress,
             "to" to CONTRACT_ADDRESS,
             "data" to data,
             "gas" to estimateGas(data)
@@ -72,7 +76,7 @@ class EthereumRepository @Inject constructor(
             method = EthereumMethod.ETH_SEND_TRANSACTION.value,
             params = listOf(params)
         )
-        return when (val result = ethereum.sendRequest(request)) {
+        return when (val result = ethereum.connectWith(request)) {
             is Result.Success.Item -> {
                 Log.d(TAG, "tran: Success\nItem: ${result.value}")
                 result.value
@@ -80,7 +84,7 @@ class EthereumRepository @Inject constructor(
 
             else -> {
                 Log.e(TAG, "tran: Fail")
-                "Fail"
+                null
             }
         }
     }
