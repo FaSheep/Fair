@@ -51,6 +51,7 @@ class AndroidCoreLibraryConventionPlugin : Plugin<Project> {
                 add("implementation", "androidx.room:room-runtime:2.6.1")
                 add("kapt", "androidx.room:room-compiler:2.6.1")
                 add("implementation", "androidx.room:room-ktx:2.6.1")
+                add("testImplementation", libs.findLibrary("kotlin-test").get())
             }
         }
     }

@@ -77,6 +77,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             dependencies {
                 add("implementation", libs.findLibrary("androidx-core-ktx").get())
                 add("implementation", libs.findLibrary("androidx-lifecycle-runtime-ktx").get())
+                add("testImplementation", libs.findLibrary("kotlin-test").get())
             }
         }
     }
