@@ -9,4 +9,7 @@ android {
 
 dependencies {
     implementation(libs.metamask.android.sdk)
+    implementation(platform(libs.ethers.bom))
+    implementation(libs.ethers.abi)
+    implementation(libs.ethers.core)
 }
