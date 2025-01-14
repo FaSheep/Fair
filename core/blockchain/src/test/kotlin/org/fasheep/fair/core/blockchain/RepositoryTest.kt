@@ -2,6 +2,7 @@ package org.fasheep.fair.core.blockchain
 
 import io.ethers.abi.AbiFunction
 import io.ethers.abi.AbiType
+import org.fasheep.fair.core.blockchain.model.RoleStruct
 import org.junit.Test
 import java.math.BigInteger
 import kotlin.test.assertEquals
@@ -30,7 +31,7 @@ class RepositoryTest {
             inputs = listOf(
                 AbiType.Array(AbiType.String),
                 AbiType.Array(
-                    AbiType.Tuple.struct(Role::class, AbiType.String, AbiType.UInt(256))
+                    AbiType.Tuple.struct(RoleStruct::class, AbiType.String, AbiType.UInt(256))
                 )
             ),
             outputs = emptyList()
@@ -38,7 +39,7 @@ class RepositoryTest {
 
         val params = arrayOf(
             arrayOf("1", "2", "3"),
-            arrayOf(Role("A", BigInteger.ONE), Role("B", BigInteger.TWO))
+            arrayOf(RoleStruct("A", BigInteger.ONE), RoleStruct("B", BigInteger.TWO))
         )
 
         val encoded = function.encodeCall(params)

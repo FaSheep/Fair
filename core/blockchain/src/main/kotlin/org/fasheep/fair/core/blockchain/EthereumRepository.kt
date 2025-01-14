@@ -1,6 +1,7 @@
 package org.fasheep.fair.core.blockchain
 
 import android.util.Log
+import io.ethers.abi.AbiFunction
 import io.metamask.androidsdk.EthereumFlowWrapper
 import io.metamask.androidsdk.EthereumMethod
 import io.metamask.androidsdk.EthereumRequest
@@ -66,7 +67,12 @@ class EthereumRepository @Inject constructor(
     }
 
     suspend fun tran(seed: Long = System.currentTimeMillis()): String? {
-        val data = String.format("0xd583e0b8%064x", seed)
+        val function = AbiFunction.parseSignature(
+            "function randWithRecord(uint256 userProvidedSeed) public returns (uint256)",
+        )
+        val data = function.encodeCall(arrayOf(
+            seed.toBigInteger()
+        )).toString()
         val params = mapOf(
             "to" to CONTRACT_ADDRESS,
             "data" to data,
