@@ -10,6 +10,8 @@ android {
 dependencies {
     implementation(libs.metamask.android.sdk)
     implementation(platform(libs.ethers.bom))
-    implementation(libs.ethers.abi)
+    implementation(libs.ethers.abi) {
+        exclude(group = "io.kriptal.ethers", module = "ethers-providers")
+    }
     implementation(libs.ethers.core)
 }
