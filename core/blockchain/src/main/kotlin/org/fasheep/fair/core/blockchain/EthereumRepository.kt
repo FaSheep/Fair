@@ -2,6 +2,7 @@ package org.fasheep.fair.core.blockchain
 
 import android.util.Log
 import io.ethers.abi.AbiFunction
+import io.ethers.abi.AbiType
 import io.metamask.androidsdk.EthereumFlowWrapper
 import io.metamask.androidsdk.EthereumMethod
 import io.metamask.androidsdk.EthereumRequest
@@ -10,12 +11,14 @@ import io.metamask.androidsdk.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import org.fasheep.fair.core.blockchain.model.RoleStruct
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val TAG = "EthereumRepository"
 
-private const val CONTRACT_ADDRESS = "0x338Dfda1d2b75B7132d338E81d6C0c4BfE023C98"
+private const val RAND_CONTRACT_ADDRESS = "0x338Dfda1d2b75B7132d338E81d6C0c4BfE023C98"
+private const val ROLE_CONTRACT_ADDRESS = ""
 
 @Singleton
 class EthereumRepository @Inject constructor(
@@ -42,7 +45,7 @@ class EthereumRepository @Inject constructor(
 
     suspend fun getRand(seed: Long = System.currentTimeMillis()): String {
         val params: Map<String, String> = mapOf(
-            "to" to CONTRACT_ADDRESS,
+            "to" to RAND_CONTRACT_ADDRESS,
             "data" to String.format("0x2530c905%064x", seed)
         )
         Log.d(TAG, "getRand: " + String.format("0x2530c905%064x", seed))
@@ -70,13 +73,15 @@ class EthereumRepository @Inject constructor(
         val function = AbiFunction.parseSignature(
             "function randWithRecord(uint256 userProvidedSeed) public returns (uint256)",
         )
-        val data = function.encodeCall(arrayOf(
-            seed.toBigInteger()
-        )).toString()
+        val data = function.encodeCall(
+            arrayOf(
+                seed.toBigInteger()
+            )
+        ).toString()
         val params = mapOf(
-            "to" to CONTRACT_ADDRESS,
+            "to" to RAND_CONTRACT_ADDRESS,
             "data" to data,
-            "gas" to estimateGas(data)
+            "gas" to estimateGas(RAND_CONTRACT_ADDRESS, data)
         )
         val request = EthereumRequest(
             method = EthereumMethod.ETH_SEND_TRANSACTION.value,
@@ -95,9 +100,50 @@ class EthereumRepository @Inject constructor(
         }
     }
 
-    private suspend fun estimateGas(data: String): String {
+    suspend fun assignRole(names: Collection<String>, roles: Collection<RoleStruct>): String? {
+        val function = AbiFunction(
+            name = "assignRoles",
+            inputs = listOf(
+                AbiType.Array(AbiType.String),
+                AbiType.Array(
+                    AbiType.Tuple.struct(RoleStruct::class, AbiType.String, AbiType.UInt(256))
+                )
+            ),
+            outputs = emptyList()
+        )
+
+        val data = function.encodeCall(
+            arrayOf(
+                names.toTypedArray(),
+                roles.toTypedArray()
+            )
+        ).toString()
+
         val params = mapOf(
-            "to" to CONTRACT_ADDRESS,
+            "to" to ROLE_CONTRACT_ADDRESS,
+            "data" to data,
+            "gas" to estimateGas(ROLE_CONTRACT_ADDRESS, data)
+        )
+        val request = EthereumRequest(
+            method = EthereumMethod.ETH_SEND_TRANSACTION.value,
+            params = listOf(params)
+        )
+        return when (val result = ethereum.connectWith(request)) {
+            is Result.Success.Item -> {
+                Log.d(TAG, "tran: Success\nItem: ${result.value}")
+                result.value
+            }
+
+            else -> {
+                Log.e(TAG, "tran: Fail")
+                null
+            }
+        }
+    }
+
+    private suspend fun estimateGas(contractAddress: String, data: String): String {
+        val params = mapOf(
+            "to" to contractAddress,
             "data" to data
         )
         val request = EthereumRequest(
