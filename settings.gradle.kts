@@ -22,7 +22,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fair"
 include(":app")
-include(":feature:card")
+include(":feature:assignment")
 include(":feature:vote")
 include(":feature:sortition")
 include(":core:data")

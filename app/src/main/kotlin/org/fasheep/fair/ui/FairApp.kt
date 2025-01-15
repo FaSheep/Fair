@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
-import org.fasheep.fair.feature.card.navigation.CARD_ROUTE
-import org.fasheep.fair.feature.card.navigation.cardScreen
+import org.fasheep.fair.feature.assignment.navigation.ASSIGNMENT_ROUTE
+import org.fasheep.fair.feature.assignment.navigation.assignmentScreen
 import org.fasheep.fair.feature.sortition.navigation.sortitionScreen
 import org.fasheep.fair.feature.vote.navigation.voteScreen
 import org.fasheep.fair.navigation.TopLevelDestination
@@ -31,9 +31,9 @@ fun FairApp(appState: FairAppState) {
         NavHost(
             modifier = Modifier.padding(innerPadding),
             navController = appState.navController,
-            startDestination = CARD_ROUTE
+            startDestination = ASSIGNMENT_ROUTE
         ) {
-            cardScreen()
+            assignmentScreen()
             voteScreen()
             sortitionScreen()
         }

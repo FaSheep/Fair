@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import org.fasheep.fair.feature.card.navigation.navigateToCard
+import org.fasheep.fair.feature.assignment.navigation.navigateToAssignment
 import org.fasheep.fair.feature.sortition.navigation.navigateToSortition
 import org.fasheep.fair.feature.vote.navigation.navigateToVote
 import org.fasheep.fair.navigation.TopLevelDestination
@@ -50,7 +50,7 @@ class FairAppState(
         }
 
         when (topLevelDestination) {
-            TopLevelDestination.CARD -> navController.navigateToCard("222", topLevelNavOptions)
+            TopLevelDestination.ASSIGNMENT -> navController.navigateToAssignment("222", topLevelNavOptions)
             TopLevelDestination.VOTE -> navController.navigateToVote(topLevelNavOptions)
             TopLevelDestination.SORTITION -> navController.navigateToSortition(topLevelNavOptions)
         }

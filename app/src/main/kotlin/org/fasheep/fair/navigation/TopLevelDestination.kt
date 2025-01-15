@@ -10,7 +10,7 @@ enum class TopLevelDestination(
     val icon: ImageVector,
     val description: String
 ) {
-    CARD(Icons.Default.Add, "card"),
+    ASSIGNMENT(Icons.Default.Add, "assignment"),
     VOTE(Icons.Default.Search, "vote"),
     SORTITION(Icons.Default.Done, "sortition")
 }

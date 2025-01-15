@@ -1,4 +1,4 @@
-package org.fasheep.fair.feature.card
+package org.fasheep.fair.feature.assignment
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -13,7 +13,7 @@ import org.fasheep.fair.core.data.repository.CardRoomRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class CardViewModel @Inject constructor(
+class AssignmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val cardRoomRepository: CardRoomRepository
 ) : ViewModel() {

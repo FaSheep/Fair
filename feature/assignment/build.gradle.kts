@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "org.fasheep.fair.feature.card"
+    namespace = "org.fasheep.fair.feature.assignment"
 }
 
 dependencies {

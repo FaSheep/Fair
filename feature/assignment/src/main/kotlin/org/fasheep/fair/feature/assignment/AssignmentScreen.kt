@@ -1,4 +1,4 @@
-package org.fasheep.fair.feature.card
+package org.fasheep.fair.feature.assignment
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,9 +18,9 @@ import kotlinx.coroutines.launch
 import org.fasheep.fair.core.model.data.CardRoom
 
 @Composable
-internal fun CardScreen(
+internal fun AssignmentScreen(
     modifier: Modifier = Modifier,
-    viewModel: CardViewModel = hiltViewModel()
+    viewModel: AssignmentViewModel = hiltViewModel()
 ) {
     remember {
         CoroutineScope(Dispatchers.Default).launch {

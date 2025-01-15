@@ -18,7 +18,7 @@ android {
 }
 
 dependencies{
-    implementation(project(":feature:card"))
+    implementation(project(":feature:assignment"))
     implementation(project(":feature:vote"))
     implementation(project(":feature:sortition"))
 //    api(project(":core:model"))
