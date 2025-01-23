@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.fasheep.fair.core.blockchain.EthereumRepository
@@ -25,7 +26,7 @@ class SortitionViewModel @Inject constructor(
     val isConnected = ethereumRepository.isConnected.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val selectAddress = ethereumRepository.selectedAddress.stateIn(viewModelScope, SharingStarted.Eagerly, "")
     private val _num: MutableStateFlow<String> = MutableStateFlow("N/A")
-    val num: StateFlow<String> = _num
+    val num: StateFlow<String> = _num.asStateFlow()
 
     fun connect() {
         viewModelScope.launch {
