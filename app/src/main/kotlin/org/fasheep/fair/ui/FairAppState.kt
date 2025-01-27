@@ -50,7 +50,7 @@ class FairAppState(
         }
 
         when (topLevelDestination) {
-            TopLevelDestination.ASSIGNMENT -> navController.navigateToAssignment("222", topLevelNavOptions)
+            TopLevelDestination.ASSIGNMENT -> navController.navigateToAssignment(topLevelNavOptions)
             TopLevelDestination.VOTE -> navController.navigateToVote(topLevelNavOptions)
             TopLevelDestination.SORTITION -> navController.navigateToSortition(topLevelNavOptions)
         }
