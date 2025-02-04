@@ -1,0 +1,15 @@
+query RoleAssign {
+    rolesAssigneds(first: 5) {
+        id
+        from
+        names
+        roles
+    }
+}
+
+query ById($id: ID = "") {
+    rolesAssigned(id: $id) {
+        names
+        roles
+    }
+}
