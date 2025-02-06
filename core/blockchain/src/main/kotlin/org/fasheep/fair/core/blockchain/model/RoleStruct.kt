@@ -4,7 +4,7 @@ import io.ethers.abi.ContractStruct
 import io.ethers.abi.StructFactory
 import java.math.BigInteger
 
-data class RoleStruct(val name: String, val count: BigInteger) : ContractStruct {
+internal data class RoleStruct(val name: String, val count: BigInteger) : ContractStruct {
     override val tuple: Array<Any> = arrayOf(name, count)
 
     override fun equals(other: Any?): Boolean {

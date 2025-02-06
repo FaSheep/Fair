@@ -11,6 +11,7 @@ import io.metamask.androidsdk.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import org.fasheep.fair.core.blockchain.model.Role
 import org.fasheep.fair.core.blockchain.model.RoleStruct
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,8 +19,9 @@ import javax.inject.Singleton
 private const val TAG = "EthereumRepository"
 
 private const val RAND_CONTRACT_ADDRESS = "0x338Dfda1d2b75B7132d338E81d6C0c4BfE023C98"
-private const val ROLE_CONTRACT_ADDRESS = ""
+private const val ROLE_CONTRACT_ADDRESS = "0x023F5f7b609eb349A9625FDB5A8c76e6DE2edBC0"
 
+// TODO: Use an interface
 @Singleton
 class EthereumRepository @Inject constructor(
     private val ethereum: EthereumFlowWrapper
@@ -100,9 +102,9 @@ class EthereumRepository @Inject constructor(
         }
     }
 
-    suspend fun assignRole(names: Collection<String>, roles: Collection<RoleStruct>): String? {
+    suspend fun assignRole(names: Collection<String>, roles: Collection<Role>): String? {
         val function = AbiFunction(
-            name = "assignRoles",
+            name = "assignWithRecord",
             inputs = listOf(
                 AbiType.Array(AbiType.String),
                 AbiType.Array(
@@ -115,7 +117,7 @@ class EthereumRepository @Inject constructor(
         val data = function.encodeCall(
             arrayOf(
                 names.toTypedArray(),
-                roles.toTypedArray()
+                roles.map { it.toStruct() }.toTypedArray()
             )
         ).toString()
 
