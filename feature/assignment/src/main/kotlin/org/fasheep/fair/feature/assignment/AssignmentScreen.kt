@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
@@ -60,14 +61,23 @@ internal fun AssignmentScreen(
     roleList: List<RoleVM>,
     nameList: List<String>,
     onAssign: () -> Unit,
-    addName: (String) -> Unit,
-    addRole: (RoleVM) -> Unit
+    addName: (String) -> Boolean,
+    addRole: (RoleVM) -> Boolean
 ) {
     val sum = roleList.sumOf { it.num }
     var showAddNameDialog by remember { mutableStateOf(false) }
     var showAddRoleDialog by remember { mutableStateOf(false) }
-    if (showAddRoleDialog) AddRoleDialog(onConfirm = { _, _ -> false }, onDismiss = {})
-    if (showAddNameDialog) AddNameDialog(onConfirm = { _ -> false }, onDismiss = {})
+    if (showAddRoleDialog) AddRoleDialog(onConfirm = { name, num ->
+        if (num.isDigitsOnly()) {
+            addRole(RoleVM(name, num.toInt()))
+        } else {
+            false
+        }
+    }, onDismiss = { showAddRoleDialog = false })
+    if (showAddNameDialog) AddNameDialog(onConfirm = {
+        addName(it)
+    }, onDismiss = { showAddNameDialog = false })
+
     Box {
         Surface {
             Row {
@@ -80,10 +90,7 @@ internal fun AssignmentScreen(
                         )
                     }
                     item {
-                        Button(onClick = {
-
-                            addName("asdasd")
-                        }) { Text("Add") }
+                        Button(onClick = { showAddNameDialog = true }) { Text("Add") }
                     }
                 }
                 Spacer(
@@ -104,7 +111,7 @@ internal fun AssignmentScreen(
                         )
                     }
                     item {
-                        Button(onClick = { addRole(RoleVM("Test", 2)) }) { Text("Add") }
+                        Button(onClick = { showAddRoleDialog = true }) { Text("Add") }
                     }
                 }
             }
@@ -253,8 +260,8 @@ fun Preview() {
         roleList = listOf(RoleVM("A", 1), RoleVM("C", 2), RoleVM("B", 1)),
         nameList = listOf("111", "2222", "3333", "444"),
         onAssign = {},
-        addName = {},
-        addRole = {}
+        addName = { false },
+        addRole = { false }
     )
 }
 
