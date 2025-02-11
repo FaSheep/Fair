@@ -12,6 +12,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import org.fasheep.fair.feature.assignment.navigation.ASSIGNMENT_ROUTE
 import org.fasheep.fair.feature.assignment.navigation.assignmentScreen
+import org.fasheep.fair.feature.history.navigation.historyScreen
 import org.fasheep.fair.feature.sortition.navigation.sortitionScreen
 import org.fasheep.fair.feature.vote.navigation.voteScreen
 import org.fasheep.fair.navigation.TopLevelDestination
@@ -36,6 +37,7 @@ fun FairApp(appState: FairAppState) {
             assignmentScreen()
             voteScreen()
             sortitionScreen()
+            historyScreen()
         }
     }
 }

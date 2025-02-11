@@ -21,5 +21,6 @@ dependencies{
     implementation(project(":feature:assignment"))
     implementation(project(":feature:vote"))
     implementation(project(":feature:sortition"))
+    implementation(project(":feature:history"))
 //    api(project(":core:model"))
 }

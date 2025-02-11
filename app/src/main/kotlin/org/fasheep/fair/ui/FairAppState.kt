@@ -9,6 +9,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import org.fasheep.fair.feature.assignment.navigation.navigateToAssignment
+import org.fasheep.fair.feature.history.navigation.navigateToHistory
 import org.fasheep.fair.feature.sortition.navigation.navigateToSortition
 import org.fasheep.fair.feature.vote.navigation.navigateToVote
 import org.fasheep.fair.navigation.TopLevelDestination
@@ -53,6 +54,7 @@ class FairAppState(
             TopLevelDestination.ASSIGNMENT -> navController.navigateToAssignment(topLevelNavOptions)
             TopLevelDestination.VOTE -> navController.navigateToVote(topLevelNavOptions)
             TopLevelDestination.SORTITION -> navController.navigateToSortition(topLevelNavOptions)
+            TopLevelDestination.HISTORY -> navController.navigateToHistory(topLevelNavOptions)
         }
     }
 

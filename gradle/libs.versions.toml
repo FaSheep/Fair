@@ -8,11 +8,12 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinTest = "1.9.22"
+kotlinxSerializationJson = "1.6.3"
 lifecycleRuntimeKtx = "2.8.4"
 activityCompose = "1.9.1"
 composeBom = "2024.04.01"
 jetbrainsKotlinJvm = "1.9.0"
-navigation = "2.7.1"
+navigation = "2.8.6"
 lifecycle = "2.7.1"
 ksp = "1.9.22-1.0.18"
 hilt = "2.51"
@@ -56,6 +57,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", v
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinTest" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 metamask-android-sdk = { group = "io.metamask.androidsdk", name = "metamask-android-sdk", version.ref = "metamaskSDK" }
 
 # Local Plugin denp

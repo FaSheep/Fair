@@ -12,5 +12,6 @@ enum class TopLevelDestination(
 ) {
     ASSIGNMENT(Icons.Default.Add, "assignment"),
     VOTE(Icons.Default.Search, "vote"),
-    SORTITION(Icons.Default.Done, "sortition")
+    SORTITION(Icons.Default.Done, "sortition"),
+    HISTORY(Icons.Default.Search, "history"),
 }
