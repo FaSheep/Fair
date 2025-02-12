@@ -1,7 +1,6 @@
-query RoleAssign {
-    rolesAssigneds(first: 5) {
-        id
-        from
+query AssignByAddress($from: Bytes = "") {
+    rolesAssigneds(orderBy: blockNumber, orderDirection: desc, where: {from: $from}) {
+        blockTimestamp
         names
         roles
     }
@@ -9,6 +8,7 @@ query RoleAssign {
 
 query ById($id: ID = "") {
     rolesAssigned(id: $id) {
+        blockTimestamp
         names
         roles
     }

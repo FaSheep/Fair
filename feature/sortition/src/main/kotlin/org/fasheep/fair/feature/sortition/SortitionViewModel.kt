@@ -59,7 +59,7 @@ class SortitionViewModel @Inject constructor(
                 _num.value = if (i % 2 == 0) ".." else "..."
                 temp = graphRepository.findNumById(transactionHash)
             }
-            _num.value = temp ?: "N/A"
+            _num.value = temp?.value ?: "N/A"
         }
     }
 }

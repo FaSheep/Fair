@@ -1,5 +1,6 @@
 query NumById($id_contains: Bytes = "") {
     getRands(where: {id_contains: $id_contains}) {
+        blockTimestamp
         num
     }
 }

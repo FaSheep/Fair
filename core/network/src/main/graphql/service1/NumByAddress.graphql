@@ -1,5 +1,6 @@
 query NumByAddress($from: Bytes) {
-    getRands(orderBy: blockNumber, where: {from: $from}) {
+    getRands(orderBy: blockNumber, orderDirection: desc, where: {from: $from}) {
+        blockTimestamp
         num
     }
 }

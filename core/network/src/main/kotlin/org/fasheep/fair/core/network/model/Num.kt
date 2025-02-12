@@ -2,14 +2,12 @@ package org.fasheep.fair.core.network.model
 
 import com.apollographql.apollo.mpp.currentTimeMillis
 
-data class Assignment internal constructor(
+data class Num internal constructor(
     val timestamp: Long = currentTimeMillis(),
-    val name: List<String>,
-    val role: List<String>
+    val value: String
 ) {
     internal constructor(
         timestamp: String,
-        name: List<String>,
-        role: List<String>
-    ) : this(timestamp.toLong() * 1000, name, role)
+        value: String
+    ) : this(timestamp.toLong() * 1000, value)
 }

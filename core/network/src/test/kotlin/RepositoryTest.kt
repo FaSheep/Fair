@@ -1,9 +1,10 @@
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.mpp.currentTimeMillis
 import kotlinx.coroutines.runBlocking
-import org.fasheep.fair.core.network.model.Assignment
 import org.fasheep.fair.core.network.service2.ByIdQuery
 import org.junit.Test
+import java.util.Date
 
 class RepositoryTest {
     @Test
@@ -16,8 +17,15 @@ class RepositoryTest {
                 apolloClient.query(ByIdQuery(id = Optional.present("0x899a43102cf7d3c1bac9fd5954efc3f49efd5dea9fbea59f25ba31b4e270037c")))
                     .execute().data?.rolesAssigned
                     ?: return@runBlocking
-            val assignments = result.names.zip(result.roles) { a, b -> Assignment(a, b) }
-            println(assignments)
+//            val assignments = result.names.zip(result.roles) { a, b -> Assignment(a, b) }
+//            println(assignments)
         }
+    }
+
+    @Test
+    fun te() {
+//        println()
+        val a =Date(currentTimeMillis().toString().toLong())
+        println(a)
     }
 }

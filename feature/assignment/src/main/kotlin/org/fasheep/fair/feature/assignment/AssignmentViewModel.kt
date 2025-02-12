@@ -47,7 +47,7 @@ class AssignmentViewModel @Inject constructor(
             delay(3000)
             var temp = graphRepository.findAssignmentById(hash)
             for (i in 1..10) {
-                if (temp.isNotEmpty()) break
+                if (temp != null) break
                 delay(1000)
                 temp = graphRepository.findAssignmentById(hash)
             }
