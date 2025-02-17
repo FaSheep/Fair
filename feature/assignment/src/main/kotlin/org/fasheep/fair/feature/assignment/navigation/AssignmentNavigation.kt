@@ -10,10 +10,10 @@ const val ASSIGNMENT_ROUTE = "assignment_route"
 
 fun NavController.navigateToAssignment(navOptions: NavOptions) = navigate(ASSIGNMENT_ROUTE, navOptions)
 
-fun NavGraphBuilder.assignmentScreen() {
+fun NavGraphBuilder.assignmentScreen(callback: (String) -> Unit) {
     composable(
         route = ASSIGNMENT_ROUTE
     ) {
-        AssignmentRoute()
+        AssignmentRoute(callback = callback)
     }
 }

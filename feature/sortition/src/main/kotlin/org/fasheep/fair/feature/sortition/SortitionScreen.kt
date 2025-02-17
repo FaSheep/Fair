@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 internal fun SortitionRoute(
     modifier: Modifier = Modifier,
+    callback: (String) -> Unit,
     viewModel: SortitionViewModel = hiltViewModel()
 ) {
     val isConnected by viewModel.isConnected.collectAsState(false)
@@ -37,7 +38,8 @@ internal fun SortitionRoute(
         isConnected = isConnected,
         num = num,
         onConnect = viewModel::connect,
-        onTran = viewModel::tranRand
+        onTran = viewModel::tranRand,
+        callback = callback
     )
 }
 
@@ -47,7 +49,8 @@ internal fun SortitionScreen(
     isConnected: Boolean,
     num: String,
     onConnect: () -> Unit,
-    onTran: () -> Unit
+    onTran: ((String) -> Unit) -> Unit,
+    callback: (String) -> Unit
 ) {
     var onlineMode: Boolean by remember { mutableStateOf(isConnected) }
     Surface(modifier = modifier.fillMaxSize()) {
@@ -104,7 +107,7 @@ internal fun SortitionScreen(
                         .weight(1f)
                         .padding(start = 5.dp), text = "Online Mode"
                 )
-                Button(onClick = { if (onlineMode) onTran() else onlineMode = true }) { Text("Tran") }
+                Button(onClick = { if (onlineMode) onTran(callback) else onlineMode = true }) { Text("Tran") }
             }
         }
     }
@@ -118,6 +121,7 @@ fun Preview() {
         isConnected = false,
         num = "N/A",
         onConnect = {},
-        onTran = {}
+        onTran = {},
+        callback = {}
     )
 }

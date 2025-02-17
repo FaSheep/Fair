@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 internal fun AssignmentRoute(
     modifier: Modifier = Modifier,
+    callback: (String) -> Unit,
     viewModel: AssignmentViewModel = hiltViewModel()
 ) {
     AssignmentScreen(
@@ -51,7 +52,8 @@ internal fun AssignmentRoute(
         nameList = viewModel.names,
         onAssign = viewModel::assign,
         addName = viewModel::addName,
-        addRole = viewModel::addRole
+        addRole = viewModel::addRole,
+        callback = callback
     )
 }
 
@@ -60,9 +62,10 @@ internal fun AssignmentScreen(
     modifier: Modifier = Modifier,
     roleList: List<RoleVM>,
     nameList: List<String>,
-    onAssign: () -> Unit,
+    onAssign: ((String) -> Unit) -> Unit,
     addName: (String) -> Boolean,
-    addRole: (RoleVM) -> Boolean
+    addRole: (RoleVM) -> Boolean,
+    callback: (String) -> Unit
 ) {
     val sum = roleList.sumOf { it.num }
     var showAddNameDialog by remember { mutableStateOf(false) }
@@ -117,7 +120,7 @@ internal fun AssignmentScreen(
             }
             // TODO FAB Menu & Animation
             FloatingActionButton(
-                onClick = onAssign, modifier = Modifier
+                onClick = { onAssign(callback) }, modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
             ) {
@@ -261,7 +264,8 @@ fun Preview() {
         nameList = listOf("111", "2222", "3333", "444"),
         onAssign = {},
         addName = { false },
-        addRole = { false }
+        addRole = { false },
+        callback = {}
     )
 }
 

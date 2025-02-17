@@ -1,5 +1,6 @@
 package org.fasheep.fair.feature.assignment
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -24,6 +25,9 @@ class AssignmentViewModel @Inject constructor(
     val roles: List<RoleVM>
         get() = _roles
 
+    init {
+        Log.d(TAG, "VM: init")
+    }
     private val _names = mutableStateListOf<String>()
     val names: List<String>
         get() = _names
@@ -40,7 +44,7 @@ class AssignmentViewModel @Inject constructor(
         return true
     }
 
-    fun assign() {
+    fun assign(callback: (String) -> Unit) {
         viewModelScope.launch {
             val hash = ethereumRepository.assignRole(names, roles.map { Role(it.name, it.num) })
             if (hash == null) return@launch
@@ -52,6 +56,7 @@ class AssignmentViewModel @Inject constructor(
                 temp = graphRepository.findAssignmentById(hash)
             }
             println(temp)
+            callback(hash) // Navigation
         }
     }
 }

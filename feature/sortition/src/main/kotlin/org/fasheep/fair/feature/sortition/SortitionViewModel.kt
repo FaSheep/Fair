@@ -1,5 +1,6 @@
 package org.fasheep.fair.feature.sortition
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,6 +24,10 @@ class SortitionViewModel @Inject constructor(
     private val ethereumRepository: EthereumRepository,
     private val graphRepository: GraphRepository
 ) : ViewModel() {
+
+    init {
+        Log.d(TAG, "VM: init")
+    }
     val isConnected = ethereumRepository.isConnected.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val selectAddress = ethereumRepository.selectedAddress.stateIn(viewModelScope, SharingStarted.Eagerly, "")
     private val _num: MutableStateFlow<String> = MutableStateFlow("N/A")
@@ -40,7 +45,7 @@ class SortitionViewModel @Inject constructor(
         }
     }
 
-    fun tranRand() {
+    fun tranRand(callback: (String) -> Unit) {
         viewModelScope.launch {
             val transactionHash = ethereumRepository.tran()
             _num.value = ".."
@@ -60,6 +65,7 @@ class SortitionViewModel @Inject constructor(
                 temp = graphRepository.findNumById(transactionHash)
             }
             _num.value = temp?.value ?: "N/A"
+            callback(num.value)
         }
     }
 }

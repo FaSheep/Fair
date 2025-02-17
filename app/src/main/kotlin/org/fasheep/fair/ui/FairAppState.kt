@@ -54,7 +54,7 @@ class FairAppState(
             TopLevelDestination.ASSIGNMENT -> navController.navigateToAssignment(topLevelNavOptions)
             TopLevelDestination.VOTE -> navController.navigateToVote(topLevelNavOptions)
             TopLevelDestination.SORTITION -> navController.navigateToSortition(topLevelNavOptions)
-            TopLevelDestination.HISTORY -> navController.navigateToHistory(topLevelNavOptions)
+            TopLevelDestination.HISTORY -> navController.navigateToHistory(navOptions = topLevelNavOptions)
         }
     }
 
