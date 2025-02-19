@@ -12,7 +12,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 internal fun SortitionRoute(
@@ -31,8 +31,8 @@ internal fun SortitionRoute(
     callback: (String) -> Unit,
     viewModel: SortitionViewModel = hiltViewModel()
 ) {
-    val isConnected by viewModel.isConnected.collectAsState(false)
-    val num by viewModel.num.collectAsState("N/A")
+    val isConnected by viewModel.isConnected.collectAsStateWithLifecycle(false)
+    val num by viewModel.num.collectAsStateWithLifecycle("N/A")
     SortitionScreen(
         modifier = modifier,
         isConnected = isConnected,

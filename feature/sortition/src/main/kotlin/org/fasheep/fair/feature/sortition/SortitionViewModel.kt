@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.fasheep.fair.core.blockchain.EthereumRepository
+import org.fasheep.fair.core.data.repository.HistoryRepository
 import org.fasheep.fair.core.network.GraphRepository
 import javax.inject.Inject
 
@@ -22,14 +23,26 @@ private const val TAG = "SortitionVM"
 class SortitionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val ethereumRepository: EthereumRepository,
-    private val graphRepository: GraphRepository
+    private val graphRepository: GraphRepository,
+    private val historyRepository: HistoryRepository
 ) : ViewModel() {
 
     init {
         Log.d(TAG, "VM: init")
     }
-    val isConnected = ethereumRepository.isConnected.stateIn(viewModelScope, SharingStarted.Eagerly, false)
-    val selectAddress = ethereumRepository.selectedAddress.stateIn(viewModelScope, SharingStarted.Eagerly, "")
+
+    val isConnected = ethereumRepository.isConnected
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = false
+        )
+    val selectAddress = ethereumRepository.selectedAddress
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = ""
+        )
     private val _num: MutableStateFlow<String> = MutableStateFlow("N/A")
     val num: StateFlow<String> = _num.asStateFlow()
 
@@ -65,7 +78,8 @@ class SortitionViewModel @Inject constructor(
                 temp = graphRepository.findNumById(transactionHash)
             }
             _num.value = temp?.value ?: "N/A"
-            callback(num.value)
+            historyRepository.update()
+            callback(transactionHash)
         }
     }
 }

@@ -24,9 +24,6 @@ fun NavController.navigateToHistory(
         // Avoid multiple copies of the same destination when
         // reselecting the same item
         launchSingleTop = true
-
-        // Restore state when reselecting a previously selected item
-//        restoreState = true
     }
 ) = navigate(History(hash), navOptions)
 

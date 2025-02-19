@@ -10,13 +10,16 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.fasheep.fair.core.blockchain.EthereumRepository
+import org.fasheep.fair.core.data.repository.HistoryRepository
 import org.fasheep.fair.core.model.data.HistoryItem
-import org.fasheep.fair.core.network.GraphRepository
 import org.fasheep.fair.core.network.model.Assignment
 import org.fasheep.fair.core.network.model.Num
 import javax.inject.Inject
@@ -28,52 +31,28 @@ const val TAG = "HistoryVM"
 class HistoryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val ethereumRepository: EthereumRepository,
-    private val graphRepository: GraphRepository
+    private val historyRepository: HistoryRepository
 ) : ViewModel() {
-
-    private val address = ethereumRepository.selectedAddress.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = ""
-    )
 
     private val _hash = MutableStateFlow("")
 
     val hash = _hash.asStateFlow()
 
-    private val _uiState: MutableStateFlow<HistoryUiState> = MutableStateFlow(
-        HistoryUiState.Loading
-    )
-
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<HistoryUiState> =
+        ethereumRepository.selectedAddress.flatMapLatest {
+            historyRepository.observeHistories(it).map { item -> HistoryUiState.Shown(item) }
+        }.onEach { _refreshing = false }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = HistoryUiState.Loading
+        )
 
     private var _refreshing by mutableStateOf(false)
     val refreshing get() = _refreshing
 
-    init {
-        Log.d(TAG, "HistoryVM: Loading")
-        load()
-    }
-
     fun refresh() {
         _refreshing = true
-        load()
-    }
-
-    private fun load() {
-        _uiState.update {
-            HistoryUiState.Loading
-        }
-        viewModelScope.launch {
-            if (address.value.isBlank()) ethereumRepository.connect()
-            Log.d("TAG", "address: ${address.value}")
-            val list = graphRepository.findNumByAddress(address.value).map { it.toItem() }
-                .plus(graphRepository.findAssignmentByAddress(address.value).map { it.toItem() })
-            _uiState.update {
-                HistoryUiState.Shown(list.sortedByDescending { it.blockTimestamp })
-            }
-            _refreshing = false
-        }
+        historyRepository.update()
     }
 
     fun onItemClick(hash: String) {

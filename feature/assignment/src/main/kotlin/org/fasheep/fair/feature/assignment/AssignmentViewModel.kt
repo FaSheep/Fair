@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.fasheep.fair.core.blockchain.EthereumRepository
 import org.fasheep.fair.core.blockchain.model.Role
+import org.fasheep.fair.core.data.repository.HistoryRepository
 import org.fasheep.fair.core.network.GraphRepository
 import javax.inject.Inject
 
@@ -19,7 +20,8 @@ const val TAG = "AssignmentVM"
 class AssignmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val ethereumRepository: EthereumRepository,
-    private val graphRepository: GraphRepository
+    private val graphRepository: GraphRepository,
+    private val historyRepository: HistoryRepository
 ) : ViewModel() {
     private val _roles = mutableStateListOf<RoleVM>()
     val roles: List<RoleVM>
@@ -56,6 +58,7 @@ class AssignmentViewModel @Inject constructor(
                 temp = graphRepository.findAssignmentById(hash)
             }
             println(temp)
+            historyRepository.update()
             callback(hash) // Navigation
         }
     }

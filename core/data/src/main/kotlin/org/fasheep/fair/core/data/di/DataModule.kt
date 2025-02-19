@@ -4,14 +4,14 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.fasheep.fair.core.data.repository.CardRoomRepository
-import org.fasheep.fair.core.data.repository.CardRoomRepositoryImpl
+import org.fasheep.fair.core.data.repository.DefaultHistoryRepository
+import org.fasheep.fair.core.data.repository.HistoryRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {
     @Binds
-    internal abstract fun bindsRoomRepository(
-        cardRoomRepositoryImpl: CardRoomRepositoryImpl
-    ): CardRoomRepository
+    internal abstract fun bindsHistoryRepository(
+        defaultHistoryRepository: DefaultHistoryRepository
+    ): HistoryRepository
 }

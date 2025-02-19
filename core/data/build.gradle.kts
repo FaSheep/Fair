@@ -8,5 +8,7 @@ android {
 }
 
 dependencies {
-    api(project(":core:database"))
+    implementation(project(":core:database"))
+    implementation(project(":core:blockchain"))
+    implementation(project(":core:network"))
 }

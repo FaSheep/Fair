@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -39,7 +40,7 @@ internal fun HistoryRoute(
     hash: String,
     viewModel: HistoryViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
 ) {
-    val uiState: HistoryUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState: HistoryUiState by viewModel.uiState.collectAsState()
     val index by viewModel.hash.collectAsStateWithLifecycle()
     rememberSaveable(hash) {
         Log.d("HistoryScreen", "HistoryRoute: launch hash=$hash")
