@@ -23,7 +23,7 @@ class GraphRepository @Inject constructor(
 
     suspend fun findNumByAddress(address: String): List<Num> {
         val response = randomClient.query(NumByAddressQuery(Optional.present(address))).execute().data?.getRands?.map {
-            Num(it.blockTimestamp.toString(), it.num.toString())
+            Num(it.blockTimestamp.toString(), it.transactionHash.toString(), it.num.toString())
         }
         return response ?: emptyList()
     }
@@ -31,19 +31,26 @@ class GraphRepository @Inject constructor(
     suspend fun findNumById(transactionHash: String): Num? {
         val rands = randomClient.query(NumByIdQuery(Optional.present(transactionHash))).execute().data?.getRands
         return if (rands.isNullOrEmpty()) null else rands.first()
-            .let { Num(it.blockTimestamp.toString(), it.num.toString()) }
+            .let { Num(it.blockTimestamp.toString(), it.transactionHash.toString(), it.num.toString()) }
     }
 
     suspend fun findAssignmentById(transactionHash: String): Assignment? {
         return assignClient.query(ByIdQuery(Optional.present(transactionHash))).execute().data?.rolesAssigned?.let {
-            Assignment(it.blockTimestamp.toString(), it.names, it.roles)
+            Assignment(it.blockTimestamp.toString(), it.transactionHash.toString(), it.names, it.roles)
         }
     }
 
     suspend fun findAssignmentByAddress(address: String): List<Assignment> {
         val response =
             assignClient.query(AssignByAddressQuery(Optional.present(address)))
-                .execute().data?.rolesAssigneds?.map { Assignment(it.blockTimestamp.toString(), it.names, it.roles) }
+                .execute().data?.rolesAssigneds?.map {
+                    Assignment(
+                        it.blockTimestamp.toString(),
+                        it.transactionHash.toString(),
+                        it.names,
+                        it.roles
+                    )
+                }
         return response ?: emptyList()
     }
 }

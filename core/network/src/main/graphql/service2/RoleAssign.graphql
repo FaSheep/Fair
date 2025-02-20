@@ -3,6 +3,7 @@ query AssignByAddress($from: Bytes = "") {
         blockTimestamp
         names
         roles
+        transactionHash
     }
 }
 
@@ -11,5 +12,6 @@ query ById($id: ID = "") {
         blockTimestamp
         names
         roles
+        transactionHash
     }
 }
