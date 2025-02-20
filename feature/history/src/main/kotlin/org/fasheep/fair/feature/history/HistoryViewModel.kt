@@ -69,11 +69,3 @@ sealed interface HistoryUiState {
 
     data object Empty : HistoryUiState
 }
-
-private fun Assignment.toItem(): HistoryItem.Assignment {
-    return HistoryItem.Assignment(timestamp, name, role)
-}
-
-private fun Num.toItem(): HistoryItem.Num {
-    return HistoryItem.Num(timestamp, value)
-}
