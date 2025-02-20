@@ -1,6 +1,5 @@
 package org.fasheep.fair.feature.history
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,22 +7,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import org.fasheep.fair.core.blockchain.EthereumRepository
 import org.fasheep.fair.core.data.repository.HistoryRepository
 import org.fasheep.fair.core.model.data.HistoryItem
-import org.fasheep.fair.core.network.model.Assignment
-import org.fasheep.fair.core.network.model.Num
 import javax.inject.Inject
-
 
 const val TAG = "HistoryVM"
 
@@ -33,10 +26,6 @@ class HistoryViewModel @Inject constructor(
     private val ethereumRepository: EthereumRepository,
     private val historyRepository: HistoryRepository
 ) : ViewModel() {
-
-    private val _hash = MutableStateFlow("")
-
-    val hash = _hash.asStateFlow()
 
     val uiState: StateFlow<HistoryUiState> =
         ethereumRepository.selectedAddress.flatMapLatest {
@@ -53,10 +42,6 @@ class HistoryViewModel @Inject constructor(
     fun refresh() {
         _refreshing = true
         historyRepository.update()
-    }
-
-    fun onItemClick(hash: String) {
-        _hash.update { hash }
     }
 }
 

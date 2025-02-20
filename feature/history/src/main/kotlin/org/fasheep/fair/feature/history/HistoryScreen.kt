@@ -22,7 +22,9 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.fasheep.fair.core.model.data.HistoryItem
 import java.util.Date
 
@@ -42,13 +43,8 @@ internal fun HistoryRoute(
     viewModel: HistoryViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
 ) {
     val uiState: HistoryUiState by viewModel.uiState.collectAsState()
-    val index by viewModel.hash.collectAsStateWithLifecycle()
-    rememberSaveable(hash) {
-        Log.d("HistoryScreen", "HistoryRoute: launch hash=$hash")
-        viewModel.onItemClick(hash)
-        true
-    }
-    HistoryScreen(index, uiState, viewModel.refreshing, viewModel::refresh, viewModel::onItemClick)
+    var index by rememberSaveable(hash) { mutableStateOf(hash) }
+    HistoryScreen(index, uiState, viewModel.refreshing, viewModel::refresh, { index = it })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +56,6 @@ internal fun HistoryScreen(
     onRefresh: () -> Unit,
     onClick: (String) -> Unit
 ) {
-//    val onClick = { str: String -> index = str }
     Surface {
         if (hash.isNotBlank()) AlertDialog(
             text = {
@@ -84,7 +79,6 @@ internal fun HistoryScreen(
                     .fillMaxSize(),
                 contentPadding = PaddingValues(6.dp)
             ) {
-//                item { Text() }
                 when (uiState) {
                     is HistoryUiState.Loading -> item { LoadingItem() }
                     is HistoryUiState.Shown -> items(uiState.histories) {
