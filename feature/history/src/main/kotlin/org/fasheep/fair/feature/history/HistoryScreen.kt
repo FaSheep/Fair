@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,7 +63,20 @@ internal fun HistoryScreen(
 //    val onClick = { str: String -> index = str }
     Surface {
         if (hash.isNotBlank()) AlertDialog(
-            onDismissRequest = { onClick("") }, confirmButton = { Text(hash) })
+            text = {
+                if (uiState is HistoryUiState.Shown) {
+                    Log.d(TAG, "histories: ${uiState.histories}")
+                    when (val temp = uiState.histories.find { it.transactionHash == hash }) {
+                        is HistoryItem.Assignment -> Text("$temp")
+                        is HistoryItem.Num -> Text("$temp")
+                        null -> Text("null")
+                    }
+                }
+            },
+            onDismissRequest = { onClick("") },
+            confirmButton = { TextButton(onClick = { onClick("") }) { Text("OK") } }
+        )
+
         PullToRefreshBox(isRefreshing = refreshing, onRefresh = onRefresh)
         {
             LazyColumn(
@@ -79,14 +93,14 @@ internal fun HistoryScreen(
                                 modifier = Modifier.padding(vertical = 5.dp),
                                 date = Date(it.blockTimestamp).toString(),
                                 num = it.role.size.toString(),
-                                onClick = onClick
+                                onClick = { onClick(it.transactionHash) }
                             )
 
                             is HistoryItem.Num -> NumHistoryCard(
                                 modifier = Modifier.padding(vertical = 5.dp),
                                 date = Date(it.blockTimestamp).toString(),
                                 num = it.value,
-                                onClick = onClick
+                                onClick = { onClick(it.transactionHash) }
                             )
                         }
                     }
@@ -110,8 +124,8 @@ fun LoadingItem() {
 }
 
 @Composable
-fun NumHistoryCard(modifier: Modifier = Modifier, date: String, num: String, onClick: (String) -> Unit) {
-    Card(modifier = modifier.clickable(onClick = { onClick(num) })) {
+fun NumHistoryCard(modifier: Modifier = Modifier, date: String, num: String, onClick: () -> Unit) {
+    Card(modifier = modifier.clickable(onClick = onClick)) {
         Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 20.dp)) {
             Text(
                 text = date, modifier = Modifier
@@ -124,8 +138,8 @@ fun NumHistoryCard(modifier: Modifier = Modifier, date: String, num: String, onC
 }
 
 @Composable
-fun AssignmentHistoryCard(modifier: Modifier = Modifier, date: String, num: String, onClick: (String) -> Unit) {
-    Card(modifier = modifier.clickable(onClick = { onClick(num) })) {
+fun AssignmentHistoryCard(modifier: Modifier = Modifier, date: String, num: String, onClick: () -> Unit) {
+    Card(modifier = modifier.clickable(onClick = onClick)) {
         Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 20.dp)) {
             Text(
                 text = date, modifier = Modifier
@@ -143,13 +157,13 @@ fun HistoryScreenPreview() {
     val uiState =
         HistoryUiState.Shown(
             listOf(
-                HistoryItem.Assignment(1770021251212L, listOf("a", "b"), listOf("A", "B")),
-                HistoryItem.Assignment(1730021251212L, listOf("a", "b"), listOf("A", "B")),
-                HistoryItem.Assignment(1730021000212L, listOf("a", "b"), listOf("A", "B")),
-                HistoryItem.Assignment(1700021000212L, listOf("a", "b"), listOf("A", "B")),
-                HistoryItem.Assignment(1700011000212L, listOf("a", "b"), listOf("A", "B")),
-                HistoryItem.Assignment(1770011000212L, listOf("a", "b"), listOf("A", "B")),
-                HistoryItem.Num(1760021251212L, "123123")
+                HistoryItem.Assignment(1770021251212L, "a", listOf("a", "b"), listOf("A", "B")),
+                HistoryItem.Assignment(1730021251212L, "a", listOf("a", "b"), listOf("A", "B")),
+                HistoryItem.Assignment(1730021000212L, "a", listOf("a", "b"), listOf("A", "B")),
+                HistoryItem.Assignment(1700021000212L, "a", listOf("a", "b"), listOf("A", "B")),
+                HistoryItem.Assignment(1700011000212L, "a", listOf("a", "b"), listOf("A", "B")),
+                HistoryItem.Assignment(1770011000212L, "a", listOf("a", "b"), listOf("A", "B")),
+                HistoryItem.Num(1760021251212L, "123123", "a")
             )
         )
     HistoryScreen(
