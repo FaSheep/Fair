@@ -79,7 +79,6 @@ class SortitionViewModel @Inject constructor(
             }
             _num.value = temp?.value ?: "N/A"
             historyRepository.update()
-            callback(transactionHash)
         }
     }
 }
