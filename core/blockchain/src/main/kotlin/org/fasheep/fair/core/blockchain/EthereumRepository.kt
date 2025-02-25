@@ -21,6 +21,7 @@ private const val TAG = "EthereumRepository"
 
 private const val RAND_CONTRACT_ADDRESS = "0x338Dfda1d2b75B7132d338E81d6C0c4BfE023C98"
 private const val ROLE_CONTRACT_ADDRESS = "0x023F5f7b609eb349A9625FDB5A8c76e6DE2edBC0"
+private const val VOTE_CONTRACT_ADDRESS = "0x94b6B68Dc7BAA5B145D28182E830692eDFa2215f"
 
 // TODO: Use an interface
 @Singleton
@@ -128,6 +129,45 @@ class EthereumRepository @Inject constructor(
             "to" to ROLE_CONTRACT_ADDRESS,
             "data" to data,
             "gas" to estimateGas(ROLE_CONTRACT_ADDRESS, data)
+        )
+        val request = EthereumRequest(
+            method = EthereumMethod.ETH_SEND_TRANSACTION.value,
+            params = listOf(params)
+        )
+        return when (val result = ethereum.connectWith(request)) {
+            is Result.Success.Item -> {
+                Log.d(TAG, "tran: Success\nItem: ${result.value}")
+                result.value
+            }
+
+            else -> {
+                Log.e(TAG, "tran: Fail")
+                null
+            }
+        }
+    }
+
+    suspend fun createVote(endTime: Long, options: List<String>): String? {
+        val function = AbiFunction(
+            name = "createVote",
+            inputs = listOf(
+                AbiType.UInt(256),
+                AbiType.Array(AbiType.String)
+            ),
+            outputs = emptyList()
+        )
+
+        val data = function.encodeCall(
+            arrayOf(
+                endTime.toBigInteger(),
+                options.toTypedArray()
+            )
+        ).toString()
+
+        val params = mapOf(
+            "to" to VOTE_CONTRACT_ADDRESS,
+            "data" to data,
+            "gas" to estimateGas(VOTE_CONTRACT_ADDRESS, data)
         )
         val request = EthereumRequest(
             method = EthereumMethod.ETH_SEND_TRANSACTION.value,

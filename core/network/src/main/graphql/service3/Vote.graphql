@@ -1,0 +1,28 @@
+query VoteCreateById($id: ID = "") {
+    voteCreated(id: $id) {
+        blockTimestamp
+        transactionHash
+        voteId
+        endTime
+        options
+    }
+}
+
+query VoteCreateByAddress($address: Bytes = "") {
+    voteCreateds(orderBy: blockNumber,orderDirection: desc,where: {creator: $address}) {
+        blockTimestamp
+        transactionHash
+        voteId
+        endTime
+        options
+    }
+}
+
+query VoteCastByVoteId($voteId: Bytes = "") {
+    voteCasteds(where: {voteId: $voteId}) {
+        blockTimestamp
+        transactionHash
+        voter
+        option
+    }
+}

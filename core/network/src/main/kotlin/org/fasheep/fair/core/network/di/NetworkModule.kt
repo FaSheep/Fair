@@ -25,6 +25,14 @@ internal object NetworkModule {
             .serverUrl("https://api.studio.thegraph.com/query/99199/assign/version/latest")
             .build()
     }
+
+    @VoteClient
+    @Provides
+    fun provideVoteClient(): ApolloClient {
+        return ApolloClient.Builder()
+            .serverUrl("https://api.studio.thegraph.com/query/99199/vote/version/latest")
+            .build()
+    }
 }
 
 @Qualifier
@@ -34,3 +42,7 @@ annotation class RandomClient
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class AssignClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class VoteClient

@@ -1,10 +1,9 @@
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import com.apollographql.apollo.mpp.currentTimeMillis
 import kotlinx.coroutines.runBlocking
+import org.fasheep.fair.core.network.GraphRepository
 import org.fasheep.fair.core.network.service2.ByIdQuery
 import org.junit.Test
-import java.util.Date
 
 class RepositoryTest {
     @Test
@@ -24,8 +23,20 @@ class RepositoryTest {
 
     @Test
     fun te() {
-//        println()
-        val a =Date(currentTimeMillis().toString().toLong())
-        println(a)
+        val graphRepository = GraphRepository(
+            ApolloClient.Builder()
+                .serverUrl("https://api.studio.thegraph.com/query/99199/random/version/latest")
+                .build(),
+            ApolloClient.Builder()
+                .serverUrl("https://api.studio.thegraph.com/query/99199/assign/version/latest")
+                .build(),
+            ApolloClient.Builder()
+                .serverUrl("https://api.studio.thegraph.com/query/99199/vote/version/latest")
+                .build()
+        )
+
+        runBlocking {
+            println(graphRepository.findVoteCreateById("0x631996f85d7cb1a3713338b9336281278738ed8361cf8f6c047caccca05e9798"))
+        }
     }
 }

@@ -27,6 +27,15 @@ apollo {
             schemaFile.set(file("$srcDir/schema.graphqls"))
         }
     }
+    service("service3") {
+        val srcDir = "src/main/graphql/service3"
+        packageName.set("org.fasheep.fair.core.network.service3")
+        srcDir(srcDir)
+        introspection {
+            endpointUrl.set("https://api.studio.thegraph.com/query/99199/vote/version/latest")
+            schemaFile.set(file("$srcDir/schema.graphqls"))
+        }
+    }
 }
 
 dependencies {
