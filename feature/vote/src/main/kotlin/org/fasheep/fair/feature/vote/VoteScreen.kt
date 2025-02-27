@@ -4,16 +4,27 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.widget.DatePicker
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,6 +37,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,16 +47,21 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.util.Calendar
@@ -104,7 +121,13 @@ fun VoteScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Create a New Vote")
+        TextSwitch(
+            isModeA = true,
+            modeAText = "Create Vote",
+            modeBText = "Cast Vote",
+            activeBackgroundColor = MaterialTheme.colorScheme.primary,
+            onModeChange = {}
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         // Date and Time Picker (Button)
@@ -256,10 +279,118 @@ fun OptionsInput(
     }
 }
 
+
+@Composable
+fun TextSwitch(
+    isModeA: Boolean,
+    onModeChange: (Boolean) -> Unit,
+    modeAText: String = "Mode A",
+    modeBText: String = "Mode B",
+    activeBackgroundColor: Color = Color(0xFFB5E8B7), // 激活状态背景色
+    inactiveBackgroundColor: Color = Color.LightGray, // 非激活状态背景色
+    textColor: Color = Color.White // 文本颜色
+) {
+    // 使用动画平滑过渡背景颜色
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isModeA) activeBackgroundColor else inactiveBackgroundColor,
+        animationSpec = tween(durationMillis = 300)
+    )
+    val width = 220.dp
+    val height = 50.dp
+    // 使用动画平滑移动选择器
+    val selectorOffset by animateDpAsState(
+        targetValue = if (isModeA) 0.dp else width / 2, // 假设每个模式文本宽度为90dp
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    Box(
+        modifier = Modifier
+            .width(width) // 总宽度
+            .height(height)
+            .clip(RoundedCornerShape(height / 2)) // 圆角
+            .background(backgroundColor)
+            .clickable { onModeChange(!isModeA) } // 点击切换模式
+    ) {
+        // 移动的选择器
+        Box(
+            modifier = Modifier
+                .offset(x = selectorOffset + 5.dp, y = 5.dp)
+                .width(width / 2 - 10.dp)
+                .height(height - 10.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White) //选择器颜色
+
+        )
+
+
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween, // 均匀分布
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ModeText(
+                text = modeAText,
+                isSelected = isModeA,
+                textColor = if (isModeA) activeBackgroundColor else textColor, //根据选中状态改变文字颜色
+                modifier = Modifier.weight(1f) // 平分宽度
+            )
+
+            ModeText(
+                text = modeBText,
+                isSelected = !isModeA,
+                textColor = if (!isModeA) activeBackgroundColor else textColor,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+fun ModeText(text: String, isSelected: Boolean, textColor: Color, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxHeight(),// 填充父组件高度
+        contentAlignment = Alignment.Center // 文字居中
+    ) {
+        Text(
+            text = text,
+            color = textColor,
+            fontSize = 16.sp,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun PreviewVoteScreen() {
     Surface {
         VoteScreen(uiState = VoteUiState.Empty, onCancel = {}, onDismiss = {}) { _, _ -> }
+    }
+}
+
+@Preview
+@Composable
+fun TextSwitchPreview() {
+    var isModeA by remember { mutableStateOf(true) }
+    MaterialTheme {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+            TextSwitch(
+                isModeA = isModeA,
+                onModeChange = { isModeA = it }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            TextSwitch(
+                isModeA = !isModeA,
+                onModeChange = { isModeA = !it },
+                activeBackgroundColor = Color.Blue,
+                modeAText = "On",
+                modeBText = "Off"
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(text = if (isModeA) "Mode A" else "Mode B")
+        }
     }
 }
