@@ -7,8 +7,8 @@ import org.fasheep.fair.core.network.di.RandomClient
 import org.fasheep.fair.core.network.di.VoteClient
 import org.fasheep.fair.core.network.model.Assignment
 import org.fasheep.fair.core.network.model.Num
-import org.fasheep.fair.core.network.model.VoteCreate
-import org.fasheep.fair.core.network.model.VoteDetail
+import org.fasheep.fair.core.network.model.Vote
+import org.fasheep.fair.core.network.model.VoteCast
 import org.fasheep.fair.core.network.service1.NumByAddressQuery
 import org.fasheep.fair.core.network.service1.NumByIdQuery
 import org.fasheep.fair.core.network.service2.AssignByAddressQuery
@@ -61,10 +61,10 @@ class GraphRepository @Inject constructor(
         return response ?: emptyList()
     }
 
-    suspend fun findVoteCreateById(transactionHash: String): VoteCreate? {
+    suspend fun findVoteCreateById(transactionHash: String): Vote? {
         return voteClient.query(VoteCreateByIdQuery(Optional.present(transactionHash)))
             .execute().data?.voteCreated?.let {
-                VoteCreate(
+                Vote(
                     it.blockTimestamp.toString(),
                     it.transactionHash.toString(),
                     it.voteId.toString(),
@@ -74,23 +74,23 @@ class GraphRepository @Inject constructor(
             }
     }
 
-    suspend fun findVoteCreateByAddress(address: String): List<VoteCreate>? {
+    suspend fun findVoteCreateByAddress(address: String): List<Vote> {
         return voteClient.query(VoteCreateByAddressQuery(Optional.present(address)))
             .execute().data?.voteCreateds?.map {
-                VoteCreate(
+                Vote(
                     it.blockTimestamp.toString(),
                     it.transactionHash.toString(),
                     it.voteId.toString(),
                     it.endTime.toString().toLong(),
                     it.options
                 )
-            }
+            } ?: emptyList()
     }
 
-    suspend fun findVoteDetailByVoteId(voteId: String): List<VoteDetail>? {
+    suspend fun findVoteDetailByVoteId(voteId: String): List<VoteCast>? {
         return voteClient.query(VoteCastByVoteIdQuery(Optional.present(voteId)))
             .execute().data?.voteCasteds?.map {
-                VoteDetail(
+                VoteCast(
                     it.blockTimestamp.toString(),
                     it.transactionHash.toString(),
                     it.voter.toString(),

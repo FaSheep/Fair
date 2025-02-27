@@ -2,7 +2,7 @@ package org.fasheep.fair.core.network.model
 
 import com.apollographql.apollo.mpp.currentTimeMillis
 
-data class VoteDetail(
+data class VoteCast(
     val timestamp: Long = currentTimeMillis(),
     val hash: String,
     val voter: String,

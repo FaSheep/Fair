@@ -36,7 +36,7 @@ fun FairApp(appState: FairAppState) {
             startDestination = ASSIGNMENT_ROUTE
         ) {
             assignmentScreen(callback = appState.navController::navigateToHistory)
-            voteScreen()
+            voteScreen(onNavHistory = appState.navController::navigateToHistory)
             sortitionScreen(callback = appState.navController::navigateToHistory)
             historyScreen()
         }

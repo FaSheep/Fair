@@ -10,10 +10,10 @@ const val VOTE_ROUTE = "vote_route"
 
 fun NavController.navigateToVote(navOptions: NavOptions) = navigate(VOTE_ROUTE, navOptions)
 
-fun NavGraphBuilder.voteScreen() {
+fun NavGraphBuilder.voteScreen(onNavHistory: (String) -> Unit) {
     composable(
         route = VOTE_ROUTE
     ) {
-        VoteRoute()
+        VoteRoute(onNavHistory = onNavHistory)
     }
 }

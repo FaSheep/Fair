@@ -2,7 +2,7 @@ package org.fasheep.fair.core.network.model
 
 import com.apollographql.apollo.mpp.currentTimeMillis
 
-data class VoteCreate(
+data class Vote(
     val timestamp: Long = currentTimeMillis(),
     val hash: String,
     val voteId: String,
@@ -16,7 +16,8 @@ data class VoteCreate(
         endTime: Long,
         options: List<String>
     ) : this(
-        timestamp.toLong() * 1000, hash,
+        timestamp.toLong() * 1000,
+        hash,
         voteId,
         endTime,
         options

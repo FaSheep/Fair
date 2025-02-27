@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,10 @@ internal fun HistoryRoute(
 ) {
     val uiState: HistoryUiState by viewModel.uiState.collectAsState()
     var index by rememberSaveable(hash) { mutableStateOf(hash) }
+    val connect by viewModel.connect.collectAsState()
+    LaunchedEffect(connect) {
+        viewModel.checkConnect()
+    }
     HistoryScreen(index, uiState, viewModel.refreshing, viewModel::refresh, { index = it })
 }
 
@@ -64,6 +69,7 @@ internal fun HistoryScreen(
                     when (val temp = uiState.histories.find { it.transactionHash == hash }) {
                         is HistoryItem.Assignment -> Text("$temp")
                         is HistoryItem.Num -> Text("$temp")
+                        is HistoryItem.Vote -> Text("$temp")
                         null -> Text("null")
                     }
                 }
@@ -94,6 +100,13 @@ internal fun HistoryScreen(
                                 modifier = Modifier.padding(vertical = 5.dp),
                                 date = Date(it.blockTimestamp).toString(),
                                 num = it.value,
+                                onClick = { onClick(it.transactionHash) }
+                            )
+
+                            is HistoryItem.Vote -> VoteHistoryCard(
+                                modifier = Modifier.padding(vertical = 5.dp),
+                                date = Date(it.blockTimestamp).toString(),
+                                num = it.options.size.toString(),
                                 onClick = { onClick(it.transactionHash) }
                             )
                         }
@@ -141,6 +154,20 @@ fun AssignmentHistoryCard(modifier: Modifier = Modifier, date: String, num: Stri
                     .align(Alignment.CenterVertically)
             )
             Text(text = "$num 人", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun VoteHistoryCard(modifier: Modifier = Modifier, date: String, num: String, onClick: () -> Unit) {
+    Card(modifier = modifier.clickable(onClick = onClick)) {
+        Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 20.dp)) {
+            Text(
+                text = date, modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically)
+            )
+            Text(text = "$num 个选项", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

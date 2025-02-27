@@ -4,24 +4,32 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.widget.DatePicker
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,6 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -45,17 +54,49 @@ import java.util.Locale
 @Composable
 internal fun VoteRoute(
     modifier: Modifier = Modifier,
+    onNavHistory: (String) -> Unit,
     viewModel: VoteViewModel = hiltViewModel()
 ) {
-    VoteScreen(onCreateVoteClicked = viewModel::createVote)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    VoteScreen(
+        modifier = modifier,
+        uiState = uiState,
+        onDismiss = viewModel::closeDialog,
+        onCancel = viewModel::cancelCurrentJob,
+        onCreateVoteClicked = { a, b -> viewModel.createVote(a, b, onNavHistory) }
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VoteScreen(onCreateVoteClicked: (Long, List<String>) -> Unit) {
+fun VoteScreen(
+    modifier: Modifier = Modifier,
+    uiState: VoteUiState,
+    onDismiss: () -> Unit,
+    onCancel: () -> Unit,
+    onCreateVoteClicked: (Long, List<String>) -> Unit
+) {
     // State variables
     var endTime by remember { mutableLongStateOf(0L) }
     val options = remember { mutableStateListOf("") }
 
+    if (uiState is VoteUiState.Shown)
+        AlertDialog(onDismissRequest = onDismiss,
+            text = { Text(uiState.message) },
+            confirmButton = { TextButton(onClick = onDismiss) { Text("OK") } })
+    if (uiState is VoteUiState.Loading)
+        BasicAlertDialog(modifier = Modifier.fillMaxSize(), onDismissRequest = {
+            onCancel()
+            onDismiss()
+        }) {
+            Box {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        }
     // UI Components
     Column(
         modifier = Modifier
@@ -203,7 +244,7 @@ fun OptionsInput(
                 trailingIcon = {
                     if (options.size > 1) {
                         IconButton(onClick = { options.removeAt(index) }) {
-                            Icon(Icons.Default.Add, contentDescription = "Remove Option")
+                            Icon(Icons.Default.Clear, contentDescription = "Remove Option")
                         }
                     }
 
@@ -219,39 +260,6 @@ fun OptionsInput(
 @Composable
 private fun PreviewVoteScreen() {
     Surface {
-        VoteScreen() { _, _ -> }
+        VoteScreen(uiState = VoteUiState.Empty, onCancel = {}, onDismiss = {}) { _, _ -> }
     }
 }
-
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//internal fun VoteScreen(
-//) {
-//    Surface {
-//        Column {
-////            val timeState: TimePickerState = rememberTimePickerState()
-////            val dateState: DatePickerState = rememberDatePickerState()
-////            TimeInput(state = timeState)
-////            DatePicker(state = dateState)
-//            Button(onClick = {}) { Text("Pick Time") }
-//            LazyColumn(
-//                modifier = Modifier.fillMaxSize(),
-//                contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp)
-//            ) {
-//                item {
-//                    Card(modifier = Modifier.fillMaxWidth()) {
-//                        Icon(
-//                            modifier = Modifier
-//                                .padding(10.dp)
-//                                .align(Alignment.CenterHorizontally),
-//                            imageVector = Icons.Default.Add,
-//                            contentDescription = ""
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//}

@@ -30,6 +30,8 @@ internal class DefaultHistoryRepository @Inject constructor(
                     .map { item -> item.toItem() })
                 addAll(graphRepository.findAssignmentByAddress(address)
                     .map { item -> item.toItem() })
+                addAll(graphRepository.findVoteCreateByAddress(address)
+                    .map { item -> item.toItem() })
             }
             list.sortedByDescending { historyItem -> historyItem.blockTimestamp }
         }

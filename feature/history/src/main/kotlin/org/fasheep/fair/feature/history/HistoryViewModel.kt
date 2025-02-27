@@ -1,5 +1,6 @@
 package org.fasheep.fair.feature.history
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.fasheep.fair.core.blockchain.EthereumRepository
 import org.fasheep.fair.core.data.repository.HistoryRepository
 import org.fasheep.fair.core.model.data.HistoryItem
@@ -32,9 +34,15 @@ class HistoryViewModel @Inject constructor(
             historyRepository.observeHistories(it).map { item -> HistoryUiState.Shown(item) }
         }.onEach { _refreshing = false }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Lazily,
+            started = SharingStarted.Eagerly,
             initialValue = HistoryUiState.Loading
         )
+
+    val connect = ethereumRepository.isConnected.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = false
+    )
 
     private var _refreshing by mutableStateOf(false)
     val refreshing get() = _refreshing
@@ -42,6 +50,15 @@ class HistoryViewModel @Inject constructor(
     fun refresh() {
         _refreshing = true
         historyRepository.update()
+    }
+
+    fun checkConnect() {
+        Log.d(TAG, "checkConnect: ${connect.value}")
+        if (!connect.value) {
+            viewModelScope.launch {
+                ethereumRepository.connect()
+            }
+        }
     }
 }
 

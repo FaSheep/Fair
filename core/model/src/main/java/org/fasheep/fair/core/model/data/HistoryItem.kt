@@ -16,4 +16,12 @@ sealed class HistoryItem {
         override val transactionHash: String,
         val value: String
     ) : HistoryItem()
+
+    data class Vote(
+        override val blockTimestamp: Long,
+        override val transactionHash: String,
+        val voteId: String,
+        val endTime: Long,
+        val options: List<String>
+    ) : HistoryItem()
 }
