@@ -13,6 +13,7 @@ import org.fasheep.fair.core.network.service1.NumByAddressQuery
 import org.fasheep.fair.core.network.service1.NumByIdQuery
 import org.fasheep.fair.core.network.service2.AssignByAddressQuery
 import org.fasheep.fair.core.network.service2.ByIdQuery
+import org.fasheep.fair.core.network.service3.VoteByVoteIdQuery
 import org.fasheep.fair.core.network.service3.VoteCastByVoteIdQuery
 import org.fasheep.fair.core.network.service3.VoteCreateByAddressQuery
 import org.fasheep.fair.core.network.service3.VoteCreateByIdQuery
@@ -85,6 +86,19 @@ class GraphRepository @Inject constructor(
                     it.options
                 )
             } ?: emptyList()
+    }
+
+    suspend fun findVoteCreateByVoteId(voteId: String): Vote? {
+        return voteClient.query(VoteByVoteIdQuery(Optional.present(voteId)))
+            .execute().data?.voteCreateds?.firstOrNull()?.let {
+                Vote(
+                    it.blockTimestamp.toString(),
+                    it.transactionHash.toString(),
+                    it.voteId.toString(),
+                    it.endTime.toString().toLong(),
+                    it.options
+                )
+            }
     }
 
     suspend fun findVoteDetailByVoteId(voteId: String): List<VoteCast>? {

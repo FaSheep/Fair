@@ -39,7 +39,7 @@ class VoteViewModel @Inject constructor(
             delay(1500)
             val hash = ethereumRepository.createVote(endTime / 1000, options)
             if (hash == null) {
-                _uiState.update { VoteUiState.Shown("Send Transaction Failed") }
+                _uiState.update { VoteUiState.Warn("Send Transaction Failed") }
                 return@launch
             }
             delay(3000)
@@ -51,7 +51,7 @@ class VoteViewModel @Inject constructor(
                 null
             }
             if (vote == null) {
-                _uiState.update { VoteUiState.Shown("Timeout") }
+                _uiState.update { VoteUiState.Warn("Timeout") }
             } else {
                 _uiState.update { VoteUiState.Empty }
                 historyRepository.update()
@@ -67,10 +67,32 @@ class VoteViewModel @Inject constructor(
     fun closeDialog() {
         _uiState.update { VoteUiState.Empty }
     }
+
+    fun fetch(voteId: String) {
+        _uiState.update { VoteUiState.Loading }
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            val temp = graphRepository.findVoteCreateByVoteId(voteId)
+            if (temp == null) {
+                _uiState.update { VoteUiState.Warn("Vote not found") }
+            } else {
+                _uiState.update { VoteUiState.Shown(temp.voteId, temp.endTime, temp.options) }
+            }
+        }
+    }
+
+    fun castVote(optionNum: Int) {
+        if (_uiState.value is VoteUiState.Shown) {
+            viewModelScope.launch {
+                val hash = ethereumRepository.castVote((_uiState.value as VoteUiState.Shown).voteId, optionNum)
+            }
+        }
+    }
 }
 
 sealed interface VoteUiState {
     data object Empty : VoteUiState
     data object Loading : VoteUiState
-    data class Shown(val message: String) : VoteUiState
+    data class Warn(val message: String) : VoteUiState
+    data class Shown(val voteId: String, val endTime: Long, val options: List<String>) : VoteUiState
 }

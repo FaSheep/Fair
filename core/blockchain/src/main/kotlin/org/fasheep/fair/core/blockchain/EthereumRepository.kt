@@ -3,6 +3,7 @@ package org.fasheep.fair.core.blockchain
 import android.util.Log
 import io.ethers.abi.AbiFunction
 import io.ethers.abi.AbiType
+import io.ethers.core.types.Bytes
 import io.metamask.androidsdk.EthereumFlowWrapper
 import io.metamask.androidsdk.EthereumMethod
 import io.metamask.androidsdk.EthereumRequest
@@ -161,6 +162,44 @@ class EthereumRepository @Inject constructor(
             arrayOf(
                 endTime.toBigInteger(),
                 options.toTypedArray()
+            )
+        ).toString()
+
+        val params = mapOf(
+            "to" to VOTE_CONTRACT_ADDRESS,
+            "data" to data,
+            "gas" to estimateGas(VOTE_CONTRACT_ADDRESS, data)
+        )
+        val request = EthereumRequest(
+            method = EthereumMethod.ETH_SEND_TRANSACTION.value,
+            params = listOf(params)
+        )
+        return when (val result = ethereum.connectWith(request)) {
+            is Result.Success.Item -> {
+                Log.d(TAG, "tran: Success\nItem: ${result.value}")
+                result.value
+            }
+
+            else -> {
+                Log.e(TAG, "tran: Fail")
+                null
+            }
+        }
+    }
+
+    suspend fun castVote(voteId: String, option: Int): String? {
+        val function = AbiFunction(
+            name = "castVote",
+            inputs = listOf(
+                AbiType.FixedBytes(32),
+                AbiType.UInt(256)
+            ),
+            outputs = emptyList()
+        )
+        val data = function.encodeCall(
+            arrayOf(
+                Bytes(voteId),
+                option.toBigInteger()
             )
         ).toString()
 

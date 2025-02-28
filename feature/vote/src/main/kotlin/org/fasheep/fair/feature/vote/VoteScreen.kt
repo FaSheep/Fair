@@ -24,12 +24,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -39,12 +43,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -80,7 +86,9 @@ internal fun VoteRoute(
         uiState = uiState,
         onDismiss = viewModel::closeDialog,
         onCancel = viewModel::cancelCurrentJob,
-        onCreateVoteClicked = { a, b -> viewModel.createVote(a, b, onNavHistory) }
+        onCreateVoteClicked = { a, b -> viewModel.createVote(a, b, onNavHistory) },
+        onFetchClick = viewModel::fetch,
+        onCastClick = viewModel::castVote
     )
 }
 
@@ -91,13 +99,17 @@ fun VoteScreen(
     uiState: VoteUiState,
     onDismiss: () -> Unit,
     onCancel: () -> Unit,
-    onCreateVoteClicked: (Long, List<String>) -> Unit
+    onCreateVoteClicked: (Long, List<String>) -> Unit,
+    onFetchClick: (String) -> Unit,
+    onCastClick: (Int) -> Unit
 ) {
     // State variables
     var endTime by remember { mutableLongStateOf(0L) }
     val options = remember { mutableStateListOf("") }
+    var isCreateMode by remember { mutableStateOf(true) } // Track the selected mode
 
-    if (uiState is VoteUiState.Shown)
+
+    if (uiState is VoteUiState.Warn)
         AlertDialog(onDismissRequest = onDismiss,
             text = { Text(uiState.message) },
             confirmButton = { TextButton(onClick = onDismiss) { Text("OK") } })
@@ -114,6 +126,7 @@ fun VoteScreen(
                 )
             }
         }
+
     // UI Components
     Column(
         modifier = Modifier
@@ -122,65 +135,197 @@ fun VoteScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextSwitch(
-            isModeA = true,
+            isModeA = isCreateMode,
             modeAText = "Create Vote",
             modeBText = "Cast Vote",
             activeBackgroundColor = MaterialTheme.colorScheme.primary,
-            onModeChange = {}
+            inactiveBackgroundColor = MaterialTheme.colorScheme.primary,
+            onModeChange = { isCreateMode = it }
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Date and Time Picker (Button)
-        DateTimePicker(
-            onDateTimeSelected = { timestamp ->
-                endTime = timestamp
-            },
-            endTime
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Display selected end time (Text)
-        if (endTime > 0) {
-            val formattedEndTime = remember(endTime) {
-                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(endTime))
-            }
-            Text(
-                text = "End Time: $formattedEndTime"
+        if (isCreateMode) {
+            // Create Vote UI
+            CreateVoteContent(
+                endTime,
+                options,
+                onDateTimeSelected = { endTime = it },
+                onCreateVoteClicked,
+                modifier.weight(1f, false)
             )
-            Spacer(modifier = Modifier.height(16.dp))
+        } else {
+            // Cast Vote UI
+            if (uiState is VoteUiState.Shown) {
+                CastVoteContent(
+                    voteId = uiState.voteId,
+                    endTime = uiState.endTime,
+                    voteOptions = uiState.options,
+                    onScanClick = {},
+                    onFetchClick = onFetchClick,
+                    onCastClick = onCastClick
+                )
+            } else {
+                CastVoteContent(
+                    voteId = "",
+                    endTime = 0,
+                    voteOptions = emptyList(),
+                    onScanClick = {},
+                    onFetchClick = onFetchClick,
+                    onCastClick = onCastClick
+                )
+            }
         }
+    }
+}
 
 
-        // Options Input
-        OptionsInput(modifier = Modifier.weight(1f, false), options = options) { index, newText ->
-            options[index] = newText
+@Composable
+fun CreateVoteContent(
+    endTime: Long,
+    options: MutableList<String>,
+    onDateTimeSelected: (Long) -> Unit,
+    onCreateVoteClicked: (Long, List<String>) -> Unit,
+    listModifier: Modifier
+) {
+    // Date and Time Picker (Button)
+    DateTimePicker(
+        onDateTimeSelected = onDateTimeSelected,
+        endTime
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    // Display selected end time (Text)
+    if (endTime > 0) {
+        val formattedEndTime = remember(endTime) {
+            SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(endTime))
         }
+        Text(
+            text = "End Time: $formattedEndTime"
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
 
-        Spacer(modifier = Modifier.height(8.dp))
+    // Options Input
+    OptionsInput(modifier = listModifier, options = options) { index, newText ->
+        options[index] = newText
+    }
 
-        // Add Option Button (with + icon)
-        Button(onClick = { options.add("") }) {
-            Icon(Icons.Default.Add, contentDescription = "Add Option")
-            Text("Add Option")
+    Spacer(modifier = Modifier.height(8.dp))
+
+    // Add Option Button (with + icon)
+    Button(onClick = { options.add("") }) {
+        Icon(Icons.Default.Add, contentDescription = "Add Option")
+        Text("Add Option")
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Create Vote Button
+    Button(
+        onClick = {
+            val filteredOptions = options.filter { it.isNotBlank() }
+            if (endTime > System.currentTimeMillis() && filteredOptions.size >= 2) {
+                onCreateVoteClicked(endTime, filteredOptions)
+            }
+        },
+        enabled = endTime > System.currentTimeMillis() && options.filter { it.isNotBlank() }.size >= 2
+    ) {
+        Text("Create Vote")
+    }
+}
+
+
+@Composable
+fun CastVoteContent(
+    voteId: String,
+    endTime: Long,
+    voteOptions: List<String>,
+    onScanClick: () -> Unit,
+    onFetchClick: (String) -> Unit,
+    onCastClick: (Int) -> Unit
+) {
+    // Dummy data for demonstration
+    var selectedOption by remember { mutableIntStateOf(0) }
+    var inputVoteId by remember { mutableStateOf("") }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(0.dp)) {
+            OutlinedTextField(
+                value = inputVoteId, onValueChange = { inputVoteId = it }, label = { Text("VoteId") },
+                trailingIcon = {
+                    Row {
+                        IconButton(
+                            onClick = onScanClick
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Scan from QR code"
+                            )
+                        }
+                        IconButton(
+                            onClick = { onFetchClick(inputVoteId) }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Send,
+                                contentDescription = "Fetch the data"
+                            )
+                        }
+                    }
+                }
+
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (voteId.isNotEmpty()) {
+            Text("$voteId\n$endTime")
+            if (System.currentTimeMillis() >= endTime * 1000) Text(
+                color = Color.Red,
+                text = "The vote is out of date"
+            )
+        }
+        // Radio Buttons for options
+        LazyColumn(Modifier.selectableGroup()) {
+            itemsIndexed(voteOptions) { index, option ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .selectable(
+                            selected = (index == selectedOption),
+                            onClick = { selectedOption = index },
+                        )
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (index == selectedOption),
+                        onClick = { selectedOption = index }
+                    )
+                    Text(
+                        text = option,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Create Vote Button (enabled only when valid)
         Button(
-            onClick = {
-                val filteredOptions = options.filter { it.isNotBlank() }
-                if (endTime > System.currentTimeMillis() && filteredOptions.size >= 2) {
-                    onCreateVoteClicked(endTime, filteredOptions)
-                }
-            },
-            enabled = endTime > System.currentTimeMillis() && options.filter { it.isNotBlank() }.size >= 2
+            onClick = { onCastClick(selectedOption) },
+//            enabled = 0 <= selectedOption && selectedOption < voteOptions.size && System.currentTimeMillis() < endTime * 1000
         ) {
-            Text("Create Vote")
+            Text("Cast Vote")
         }
     }
 }
+
 
 @Composable
 fun DateTimePicker(onDateTimeSelected: (Long) -> Unit, endTime: Long) {
@@ -286,7 +431,7 @@ fun TextSwitch(
     onModeChange: (Boolean) -> Unit,
     modeAText: String = "Mode A",
     modeBText: String = "Mode B",
-    activeBackgroundColor: Color = Color(0xFFB5E8B7), // 激活状态背景色
+    activeBackgroundColor: Color = MaterialTheme.colorScheme.primary, // 激活状态背景色
     inactiveBackgroundColor: Color = Color.LightGray, // 非激活状态背景色
     textColor: Color = Color.White // 文本颜色
 ) {
@@ -299,13 +444,13 @@ fun TextSwitch(
     val height = 50.dp
     // 使用动画平滑移动选择器
     val selectorOffset by animateDpAsState(
-        targetValue = if (isModeA) 0.dp else width / 2, // 假设每个模式文本宽度为90dp
+        targetValue = if (isModeA) 5.dp else (width - 10.dp) / 2, // 假设每个模式文本宽度为90dp
         animationSpec = tween(durationMillis = 300)
     )
 
     Box(
         modifier = Modifier
-            .width(width) // 总宽度
+            .width(width - 10.dp) // 总宽度
             .height(height)
             .clip(RoundedCornerShape(height / 2)) // 圆角
             .background(backgroundColor)
@@ -314,7 +459,7 @@ fun TextSwitch(
         // 移动的选择器
         Box(
             modifier = Modifier
-                .offset(x = selectorOffset + 5.dp, y = 5.dp)
+                .offset(x = selectorOffset, y = 5.dp)
                 .width(width / 2 - 10.dp)
                 .height(height - 10.dp)
                 .clip(RoundedCornerShape(20.dp))
@@ -365,7 +510,13 @@ fun ModeText(text: String, isSelected: Boolean, textColor: Color, modifier: Modi
 @Composable
 private fun PreviewVoteScreen() {
     Surface {
-        VoteScreen(uiState = VoteUiState.Empty, onCancel = {}, onDismiss = {}) { _, _ -> }
+        VoteScreen(
+            uiState = VoteUiState.Empty,
+            onCancel = {},
+            onDismiss = {},
+            onCreateVoteClicked = { _, _ -> },
+            onFetchClick = {},
+            onCastClick = {})
     }
 }
 
@@ -391,6 +542,22 @@ fun TextSwitchPreview() {
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = if (isModeA) "Mode A" else "Mode B")
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CastVoteContentPreview() {
+    MaterialTheme {
+        Surface {
+            CastVoteContent(
+                voteId = "",
+                endTime = 0,
+                voteOptions = listOf("A", "B"),
+                onCastClick = {},
+                onFetchClick = {},
+                onScanClick = {})
         }
     }
 }

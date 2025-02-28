@@ -18,6 +18,16 @@ query VoteCreateByAddress($address: Bytes = "") {
     }
 }
 
+query VoteByVoteId($voteId: Bytes = "") {
+    voteCreateds(where: {voteId: $voteId}) {
+        blockTimestamp
+        transactionHash
+        voteId
+        endTime
+        options
+    }
+}
+
 query VoteCastByVoteId($voteId: Bytes = "") {
     voteCasteds(where: {voteId: $voteId}) {
         blockTimestamp
