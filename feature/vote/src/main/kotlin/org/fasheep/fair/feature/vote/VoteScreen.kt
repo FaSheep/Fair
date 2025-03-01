@@ -319,7 +319,7 @@ fun CastVoteContent(
 
         Button(
             onClick = { onCastClick(selectedOption) },
-//            enabled = 0 <= selectedOption && selectedOption < voteOptions.size && System.currentTimeMillis() < endTime * 1000
+            enabled = 0 <= selectedOption && selectedOption < voteOptions.size && System.currentTimeMillis() < endTime * 1000
         ) {
             Text("Cast Vote")
         }
