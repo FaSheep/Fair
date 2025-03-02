@@ -254,7 +254,8 @@ fun CastVoteContent(
     val barcodeLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
         if (result.contents != null) {
             inputVoteId = result.contents
-            onFetchClick(inputVoteId) // Fetch data after scanning
+            if (inputVoteId.length == 66)
+                onFetchClick(inputVoteId) // Fetch data after scanning
         }
     }
 
@@ -284,7 +285,7 @@ fun CastVoteContent(
                         IconButton(onClick = { launchBarcodeScanner() }) {
                             Icon(Icons.Default.Search, contentDescription = "Scan QR Code")
                         }
-                        IconButton(onClick = { onFetchClick(inputVoteId) }) {
+                        IconButton(onClick = { onFetchClick(inputVoteId) }, enabled = inputVoteId.length == 66) {
                             Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Fetch Data")
                         }
                     }
