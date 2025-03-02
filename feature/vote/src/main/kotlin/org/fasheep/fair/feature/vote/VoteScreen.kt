@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.widget.DatePicker
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -70,6 +71,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -160,7 +163,6 @@ fun VoteScreen(
                     voteId = uiState.voteId,
                     endTime = uiState.endTime,
                     voteOptions = uiState.options,
-                    onScanClick = {},
                     onFetchClick = onFetchClick,
                     onCastClick = onCastClick
                 )
@@ -169,7 +171,6 @@ fun VoteScreen(
                     voteId = "",
                     endTime = 0,
                     voteOptions = emptyList(),
-                    onScanClick = {},
                     onFetchClick = onFetchClick,
                     onCastClick = onCastClick
                 )
@@ -241,46 +242,58 @@ fun CastVoteContent(
     voteId: String,
     endTime: Long,
     voteOptions: List<String>,
-    onScanClick: () -> Unit,
     onFetchClick: (String) -> Unit,
     onCastClick: (Int) -> Unit
 ) {
-    // Dummy data for demonstration
-    var selectedOption by remember { mutableIntStateOf(0) }
+    // State for the input Vote ID
     var inputVoteId by remember { mutableStateOf("") }
+    // State for the selected option
+    var selectedOption by remember { mutableIntStateOf(0) }
+
+    // QR Code Scanning setup
+    val barcodeLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
+        if (result.contents != null) {
+            inputVoteId = result.contents
+            onFetchClick(inputVoteId) // Fetch data after scanning
+        }
+    }
+
+    val launchBarcodeScanner = {
+        barcodeLauncher.launch(ScanOptions().apply {
+            setPrompt("Scan a QR Code")
+            setBeepEnabled(true)
+            setOrientationLocked(false)
+        })
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Input field for Vote ID with QR Code scan button
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(0.dp)) {
             OutlinedTextField(
-                value = inputVoteId, onValueChange = { inputVoteId = it }, label = { Text("VoteId") },
+                value = inputVoteId,
+                onValueChange = { inputVoteId = it },
+                label = { Text("Vote ID") },
                 trailingIcon = {
                     Row {
-                        IconButton(
-                            onClick = onScanClick
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Scan from QR code"
-                            )
+                        IconButton(onClick = { launchBarcodeScanner() }) {
+                            Icon(Icons.Default.Search, contentDescription = "Scan QR Code")
                         }
-                        IconButton(
-                            onClick = { onFetchClick(inputVoteId) }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = "Fetch the data"
-                            )
+                        IconButton(onClick = { onFetchClick(inputVoteId) }) {
+                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Fetch Data")
                         }
                     }
                 }
-
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Display Vote ID and End Time
         if (voteId.isNotEmpty()) {
             Text("$voteId\n$endTime")
             if (System.currentTimeMillis() >= endTime * 1000) Text(
@@ -288,6 +301,7 @@ fun CastVoteContent(
                 text = "The vote is out of date"
             )
         }
+
         // Radio Buttons for options
         LazyColumn(Modifier.selectableGroup()) {
             itemsIndexed(voteOptions) { index, option ->
@@ -317,6 +331,7 @@ fun CastVoteContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Cast Vote Button
         Button(
             onClick = { onCastClick(selectedOption) },
             enabled = 0 <= selectedOption && selectedOption < voteOptions.size && System.currentTimeMillis() < endTime * 1000
@@ -557,7 +572,7 @@ fun CastVoteContentPreview() {
                 voteOptions = listOf("A", "B"),
                 onCastClick = {},
                 onFetchClick = {},
-                onScanClick = {})
+            )
         }
     }
 }

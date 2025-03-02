@@ -12,4 +12,5 @@ dependencies {
     implementation(project(":core:blockchain"))
     implementation(project(":core:network"))
     implementation(project(":core:data"))
+    implementation(libs.zxing.android.embedded)
 }
