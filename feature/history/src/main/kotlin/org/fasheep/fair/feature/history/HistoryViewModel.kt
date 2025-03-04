@@ -2,6 +2,7 @@ package org.fasheep.fair.feature.history
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -17,7 +18,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.fasheep.fair.core.blockchain.EthereumRepository
 import org.fasheep.fair.core.data.repository.HistoryRepository
+import org.fasheep.fair.core.model.data.DataDetail
 import org.fasheep.fair.core.model.data.HistoryItem
+import org.fasheep.fair.core.model.data.VoteCast
+import org.fasheep.fair.core.network.GraphRepository
 import javax.inject.Inject
 
 const val TAG = "HistoryVM"
@@ -26,7 +30,8 @@ const val TAG = "HistoryVM"
 class HistoryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val ethereumRepository: EthereumRepository,
-    private val historyRepository: HistoryRepository
+    private val historyRepository: HistoryRepository,
+    private val graphRepository: GraphRepository
 ) : ViewModel() {
 
     val uiState: StateFlow<HistoryUiState> =
@@ -37,6 +42,8 @@ class HistoryViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = HistoryUiState.Loading
         )
+
+    val details = mutableStateListOf<DataDetail>()
 
     val connect = ethereumRepository.isConnected.stateIn(
         scope = viewModelScope,
@@ -57,6 +64,23 @@ class HistoryViewModel @Inject constructor(
         if (!connect.value) {
             viewModelScope.launch {
                 ethereumRepository.connect()
+            }
+        }
+    }
+
+    fun fetchDetail(historyItem: HistoryItem) {
+        when (historyItem) {
+            is HistoryItem.Assignment, is HistoryItem.Num -> return
+            is HistoryItem.Vote -> viewModelScope.launch {
+                details.add(
+                    DataDetail.Vote(
+                        hash = historyItem.transactionHash,
+                        voteId = historyItem.voteId,
+                        options = historyItem.options,
+                        graphRepository.findVoteCastByVoteId(historyItem.voteId)
+                            ?.map { VoteCast(it.voter, it.option.toInt()) } ?: emptyList()
+                    )
+                )
             }
         }
     }

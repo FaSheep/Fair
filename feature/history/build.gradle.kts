@@ -14,4 +14,5 @@ dependencies {
     implementation(project(":core:blockchain"))
     implementation(project(":core:network"))
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.zxing.android.embedded)
 }

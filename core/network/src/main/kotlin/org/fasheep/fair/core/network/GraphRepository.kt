@@ -101,7 +101,7 @@ class GraphRepository @Inject constructor(
             }
     }
 
-    suspend fun findVoteDetailByVoteId(voteId: String): List<VoteCast>? {
+    suspend fun findVoteCastByVoteId(voteId: String): List<VoteCast>? {
         return voteClient.query(VoteCastByVoteIdQuery(Optional.present(voteId)))
             .execute().data?.voteCasteds?.map {
                 VoteCast(
