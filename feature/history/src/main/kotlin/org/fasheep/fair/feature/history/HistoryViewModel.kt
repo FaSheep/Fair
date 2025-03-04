@@ -61,7 +61,7 @@ class HistoryViewModel @Inject constructor(
 
     fun checkConnect() {
         Log.d(TAG, "checkConnect: ${connect.value}")
-        if (!connect.value) {
+        if (!connect.value && uiState.value is HistoryUiState.Loading) {
             viewModelScope.launch {
                 ethereumRepository.connect()
             }

@@ -23,6 +23,7 @@ private const val TAG = "EthereumRepository"
 private const val RAND_CONTRACT_ADDRESS = "0x338Dfda1d2b75B7132d338E81d6C0c4BfE023C98"
 private const val ROLE_CONTRACT_ADDRESS = "0x023F5f7b609eb349A9625FDB5A8c76e6DE2edBC0"
 private const val VOTE_CONTRACT_ADDRESS = "0x94b6B68Dc7BAA5B145D28182E830692eDFa2215f"
+private const val CHAIN_ID = "0xaa36a7"
 
 // TODO: Use an interface
 @Singleton
@@ -35,7 +36,7 @@ class EthereumRepository @Inject constructor(
     val selectedAddress: Flow<String> = _ethereumFlow.map {
         it.selectedAddress
     }.filter { it.isNotEmpty() }.distinctUntilChanged()
-    val chainId: Flow<String> = _ethereumFlow.map { it.sessionId }.distinctUntilChanged()
+    val chainIdFlow: Flow<String> = _ethereumFlow.map { it.sessionId }.distinctUntilChanged()
 
     // Wrapper function to connect the dapp.
     suspend fun connect(): Boolean {
@@ -51,9 +52,12 @@ class EthereumRepository @Inject constructor(
     }
 
     suspend fun getRand(seed: Long = System.currentTimeMillis()): String {
+        if (ethereum.selectedAddress.isEmpty()) ethereum.connect()
+        if (ethereum.chainId != CHAIN_ID) ethereum.switchEthereumChain(CHAIN_ID)
         val params: Map<String, String> = mapOf(
             "to" to RAND_CONTRACT_ADDRESS,
-            "data" to String.format("0x2530c905%064x", seed)
+            "data" to String.format("0x2530c905%064x", seed),
+            "chainId" to CHAIN_ID
         )
         Log.d(TAG, "getRand: " + String.format("0x2530c905%064x", seed))
         val ethereumRequest = EthereumRequest(method = EthereumMethod.ETH_CALL.value, params = listOf(params))
@@ -77,6 +81,8 @@ class EthereumRepository @Inject constructor(
     }
 
     suspend fun tran(seed: Long = System.currentTimeMillis()): String? {
+        if (ethereum.selectedAddress.isEmpty()) ethereum.connect()
+        if (ethereum.chainId != CHAIN_ID) ethereum.switchEthereumChain(CHAIN_ID)
         val function = AbiFunction.parseSignature(
             "function randWithRecord(uint256 userProvidedSeed) public returns (uint256)",
         )
@@ -88,7 +94,8 @@ class EthereumRepository @Inject constructor(
         val params = mapOf(
             "to" to RAND_CONTRACT_ADDRESS,
             "data" to data,
-            "gas" to estimateGas(RAND_CONTRACT_ADDRESS, data)
+            "gas" to estimateGas(RAND_CONTRACT_ADDRESS, data),
+            "chainId" to CHAIN_ID
         )
         val request = EthereumRequest(
             method = EthereumMethod.ETH_SEND_TRANSACTION.value,
@@ -108,6 +115,8 @@ class EthereumRepository @Inject constructor(
     }
 
     suspend fun assignRole(names: Collection<String>, roles: Collection<Role>): String? {
+        if (ethereum.selectedAddress.isEmpty()) ethereum.connect()
+        if (ethereum.chainId != CHAIN_ID) ethereum.switchEthereumChain(CHAIN_ID)
         val function = AbiFunction(
             name = "assignWithRecord",
             inputs = listOf(
@@ -129,7 +138,8 @@ class EthereumRepository @Inject constructor(
         val params = mapOf(
             "to" to ROLE_CONTRACT_ADDRESS,
             "data" to data,
-            "gas" to estimateGas(ROLE_CONTRACT_ADDRESS, data)
+            "gas" to estimateGas(ROLE_CONTRACT_ADDRESS, data),
+            "chainId" to CHAIN_ID
         )
         val request = EthereumRequest(
             method = EthereumMethod.ETH_SEND_TRANSACTION.value,
@@ -149,6 +159,8 @@ class EthereumRepository @Inject constructor(
     }
 
     suspend fun createVote(endTime: Long, options: List<String>): String? {
+        if (ethereum.selectedAddress.isEmpty()) ethereum.connect()
+        if (ethereum.chainId != CHAIN_ID) ethereum.switchEthereumChain(CHAIN_ID)
         val function = AbiFunction(
             name = "createVote",
             inputs = listOf(
@@ -168,7 +180,8 @@ class EthereumRepository @Inject constructor(
         val params = mapOf(
             "to" to VOTE_CONTRACT_ADDRESS,
             "data" to data,
-            "gas" to estimateGas(VOTE_CONTRACT_ADDRESS, data)
+            "gas" to estimateGas(VOTE_CONTRACT_ADDRESS, data),
+            "chainId" to CHAIN_ID
         )
         val request = EthereumRequest(
             method = EthereumMethod.ETH_SEND_TRANSACTION.value,
@@ -188,6 +201,8 @@ class EthereumRepository @Inject constructor(
     }
 
     suspend fun castVote(voteId: String, option: Int): String? {
+        if (ethereum.selectedAddress.isEmpty()) ethereum.connect()
+        if (ethereum.chainId != CHAIN_ID) ethereum.switchEthereumChain(CHAIN_ID)
         val function = AbiFunction(
             name = "castVote",
             inputs = listOf(
@@ -206,7 +221,8 @@ class EthereumRepository @Inject constructor(
         val params = mapOf(
             "to" to VOTE_CONTRACT_ADDRESS,
             "data" to data,
-            "gas" to estimateGas(VOTE_CONTRACT_ADDRESS, data)
+            "gas" to estimateGas(VOTE_CONTRACT_ADDRESS, data),
+            "chainId" to CHAIN_ID
         )
         val request = EthereumRequest(
             method = EthereumMethod.ETH_SEND_TRANSACTION.value,
@@ -228,7 +244,8 @@ class EthereumRepository @Inject constructor(
     private suspend fun estimateGas(contractAddress: String, data: String): String {
         val params = mapOf(
             "to" to contractAddress,
-            "data" to data
+            "data" to data,
+            "chainId" to CHAIN_ID
         )
         val request = EthereumRequest(
             method = EthereumMethod.ETH_ESTIMATE_GAS.value,
