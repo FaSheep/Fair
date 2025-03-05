@@ -261,19 +261,19 @@ fun HistoryCard(modifier: Modifier = Modifier, historyItem: HistoryItem, onClick
             Spacer(Modifier.weight(1f))
             when (historyItem) {
                 is HistoryItem.Assignment -> Text(
-                    text = "${historyItem.role.size}人",
+                    text = "${historyItem.role.size} People",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 is HistoryItem.Num -> Text(
-                    text = historyItem.value,
+                    text = "Number: ${historyItem.value}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 is HistoryItem.Vote -> Text(
-                    text = "${historyItem.options.size}选项",
+                    text = "${historyItem.options.size} Options",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
