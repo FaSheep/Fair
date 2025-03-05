@@ -135,15 +135,35 @@ fun HistoryDialog(
     AlertDialog(
         text = {
             when (historyItem) {
-                is HistoryItem.Assignment -> Text(
-                    """
-                        Hash: ${historyItem.transactionHash}
-                        
-                        Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
-                        
-                        Data: ${historyItem.name.zip(historyItem.role)}
-                    """.trimIndent()
-                )
+                is HistoryItem.Assignment -> Column {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        Image(
+                            bitmap = BarcodeEncoder().encodeBitmap(
+                                "http://static-mp-4aa5f682-2195-4448-90bb-1ea0aabf9bb3.next.bspapp.com/tttttt.html?id=${historyItem.transactionHash}",
+                                BarcodeFormat.QR_CODE,
+                                400,
+                                400
+                            ).asImageBitmap(), contentDescription = "QR Code"
+                        )
+                    }
+                    Text(
+                        """
+                            Hash: ${historyItem.transactionHash}
+                            
+                            Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
+                        """.trimIndent()
+                    )
+                    if (showMore) Text(
+                        """
+                            
+                            Data: ${historyItem.name.zip(historyItem.role)}
+                        """.trimIndent()
+                    )
+                }
 
                 is HistoryItem.Num -> Text(
                     """
@@ -194,8 +214,19 @@ fun HistoryDialog(
                                 onFetchDetail(historyItem)
                             }
                         } else if (detail is DataDetail.Vote) {
+                            val latestVotes = mutableMapOf<String, Int>()
+                            for (vote in detail.data) {
+                                latestVotes[vote.voter] = vote.optionNum
+                            }
+                            val voteCounts = mutableMapOf<String, Int>()
+                            for (optionNum in latestVotes.values) {
+                                val optionStr = historyItem.options[optionNum]
+                                voteCounts[optionStr] = voteCounts.getOrDefault(optionStr, 0) + 1
+                            }
                             Text(
                                 """
+                                    
+                                    Summary: $voteCounts
                                     
                                     Data: ${detail.data}
                                 """.trimIndent()
@@ -209,7 +240,7 @@ fun HistoryDialog(
         },
         onDismissRequest = { onClick("") },
         dismissButton = {
-            if (!showMore && historyItem is HistoryItem.Vote) {
+            if (!showMore && (historyItem is HistoryItem.Vote || historyItem is HistoryItem.Assignment)) {
                 TextButton(onClick = { showMore = true }) { Text("Show more") }
             }
         },
