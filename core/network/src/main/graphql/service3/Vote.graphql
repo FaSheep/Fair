@@ -29,7 +29,7 @@ query VoteByVoteId($voteId: Bytes = "") {
 }
 
 query VoteCastByVoteId($voteId: Bytes = "") {
-    voteCasteds(where: {voteId: $voteId}) {
+    voteCasteds(orderBy: blockNumber, where: {voteId: $voteId}) {
         blockTimestamp
         transactionHash
         voter
