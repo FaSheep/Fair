@@ -43,7 +43,9 @@ class HistoryViewModel @Inject constructor(
             initialValue = HistoryUiState.Loading
         )
 
-    val details = mutableStateListOf<DataDetail>()
+    private val _details = mutableStateListOf<DataDetail>()
+
+    val details: List<DataDetail> get() = _details
 
     val connect = ethereumRepository.isConnected.stateIn(
         scope = viewModelScope,
@@ -56,6 +58,7 @@ class HistoryViewModel @Inject constructor(
 
     fun refresh() {
         _refreshing = true
+        _details.clear()
         historyRepository.update()
     }
 
@@ -72,7 +75,7 @@ class HistoryViewModel @Inject constructor(
         when (historyItem) {
             is HistoryItem.Assignment, is HistoryItem.Num -> return
             is HistoryItem.Vote -> viewModelScope.launch {
-                details.add(
+                _details.add(
                     DataDetail.Vote(
                         hash = historyItem.transactionHash,
                         voteId = historyItem.voteId,

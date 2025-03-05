@@ -3,6 +3,7 @@ package org.fasheep.fair.feature.assignment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,13 +12,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,6 +58,8 @@ internal fun AssignmentRoute(
         onAssign = viewModel::assign,
         addName = viewModel::addName,
         addRole = viewModel::addRole,
+        deleteName = viewModel::deleteName,
+        deleteRole = viewModel::deleteRole,
         callback = callback
     )
 }
@@ -65,6 +72,8 @@ internal fun AssignmentScreen(
     onAssign: ((String) -> Unit) -> Unit,
     addName: (String) -> Boolean,
     addRole: (RoleVM) -> Boolean,
+    deleteName: (String) -> Unit,
+    deleteRole: (String) -> Unit,
     callback: (String) -> Unit
 ) {
     val sum = roleList.sumOf { it.num }
@@ -84,16 +93,21 @@ internal fun AssignmentScreen(
     Box {
         Surface {
             Row {
-                LazyColumn(Modifier.weight(0.4f)) {
+                LazyColumn(Modifier.weight(0.4f), contentPadding = PaddingValues(5.dp)) {
                     items(nameList) { name ->
                         NameCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(5.dp), name = name
+                                .padding(vertical = 3.dp),
+                            name = name,
+                            onDeleteClick = { deleteName(name) }
                         )
                     }
                     item {
-                        Button(onClick = { showAddNameDialog = true }) { Text("Add") }
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(corner = CornerSize(12.dp)),
+                            onClick = { showAddNameDialog = true }) { Text("Add a people") }
                     }
                 }
                 Spacer(
@@ -102,19 +116,23 @@ internal fun AssignmentScreen(
                         .fillMaxHeight()
                         .background(color = Color.Black)
                 )
-                LazyColumn(Modifier.weight(0.6f)) {
+                LazyColumn(Modifier.weight(0.6f), contentPadding = PaddingValues(5.dp)) {
                     items(roleList) { role ->
                         RoleCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(5.dp),
+                                .padding(vertical = 3.dp),
                             name = role.name,
                             number = role.num,
-                            percentage = role.num.toFloat() / sum
+                            percentage = role.num.toFloat() / sum,
+                            onDeleteClick = { deleteRole(role.name) }
                         )
                     }
                     item {
-                        Button(onClick = { showAddRoleDialog = true }) { Text("Add") }
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(corner = CornerSize(12.dp)),
+                            onClick = { showAddRoleDialog = true }) { Text("Add a role") }
                     }
                 }
             }
@@ -228,31 +246,57 @@ fun AddNameDialog(
 }
 
 @Composable
-private fun NameCard(modifier: Modifier = Modifier, name: String) {
+private fun NameCard(modifier: Modifier = Modifier, name: String, onDeleteClick: () -> Unit) {
     Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(name)
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete"
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun RoleCard(modifier: Modifier = Modifier, name: String, number: Int, percentage: Float) {
+private fun RoleCard(
+    modifier: Modifier = Modifier,
+    name: String,
+    number: Int,
+    percentage: Float,
+    onDeleteClick: () -> Unit
+) {
     Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(5.dp)) {
-            Row {
-                Text(modifier = Modifier.weight(1f), text = name)
-                Text(text = "$number")
+        Row(modifier = Modifier.padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row {
+                    Text(text = name)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(text = "$number")
+                }
+                LinearProgressIndicator(
+                    progress = { percentage },
+                    modifier = Modifier
+                        .padding(vertical = 5.dp)
+                        .fillMaxWidth(),
+                    trackColor = Color.LightGray,
+                    gapSize = (-1).dp,
+                    drawStopIndicator = {}
+                )
             }
-            LinearProgressIndicator(
-                progress = { percentage },
-                modifier = Modifier
-                    .padding(vertical = 5.dp)
-                    .fillMaxWidth(),
-                trackColor = Color.LightGray,
-                gapSize = (-1).dp,
-                drawStopIndicator = {}
-            )
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete"
+                )
+            }
         }
     }
 }
@@ -267,6 +311,8 @@ fun Preview() {
         onAssign = {},
         addName = { false },
         addRole = { false },
+        deleteName = {},
+        deleteRole = {},
         callback = {}
     )
 }
@@ -287,7 +333,7 @@ fun AddNameDialogPreview() {
 @Composable
 fun RoleCardPreview() {
     Surface {
-        RoleCard(modifier = Modifier.width(300.dp), name = "AAA", number = 3, percentage = 0.3f)
+        RoleCard(modifier = Modifier.width(300.dp), name = "AAA", number = 3, percentage = 0.3f, onDeleteClick = {})
     }
 }
 
@@ -295,6 +341,6 @@ fun RoleCardPreview() {
 @Composable
 fun NameCardPreview() {
     Surface {
-        NameCard(name = "Ben")
+        NameCard(name = "Ben", onDeleteClick = {})
     }
 }

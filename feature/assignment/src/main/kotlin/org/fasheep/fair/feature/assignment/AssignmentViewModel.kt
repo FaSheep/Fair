@@ -46,7 +46,16 @@ class AssignmentViewModel @Inject constructor(
         return true
     }
 
+    fun deleteRole(roleName: String) {
+        _roles.removeIf { it.name == roleName }
+    }
+
+    fun deleteName(name: String) {
+        _names.removeIf { it == name }
+    }
+
     fun assign(callback: (String) -> Unit) {
+        if (_names.size != _roles.sumOf { it.num }) return
         viewModelScope.launch {
             val hash = ethereumRepository.assignRole(names, roles.map { Role(it.name, it.num) })
             if (hash == null) return@launch
