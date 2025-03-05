@@ -52,15 +52,9 @@ class SortitionViewModel @Inject constructor(
         }
     }
 
-    fun callRand() {
+    fun tranRand(min: Long, max: Long, callback: (String) -> Unit) {
         viewModelScope.launch {
-            _num.value = ethereumRepository.getRand()
-        }
-    }
-
-    fun tranRand(callback: (String) -> Unit) {
-        viewModelScope.launch {
-            val transactionHash = ethereumRepository.tran()
+            val transactionHash = ethereumRepository.tran(min = min, max = max)
             _num.value = ".."
             delay(1000)
             _num.value = "..."

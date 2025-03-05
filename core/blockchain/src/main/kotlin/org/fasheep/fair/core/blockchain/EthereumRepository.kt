@@ -20,7 +20,7 @@ import javax.inject.Singleton
 
 private const val TAG = "EthereumRepository"
 
-private const val RAND_CONTRACT_ADDRESS = "0x338Dfda1d2b75B7132d338E81d6C0c4BfE023C98"
+private const val RAND_CONTRACT_ADDRESS = "0xc0106Ec0Cd2Ff2bAd852cfD5bC035398092c5063"
 private const val ROLE_CONTRACT_ADDRESS = "0x023F5f7b609eb349A9625FDB5A8c76e6DE2edBC0"
 private const val VOTE_CONTRACT_ADDRESS = "0x94b6B68Dc7BAA5B145D28182E830692eDFa2215f"
 private const val CHAIN_ID = "0xaa36a7"
@@ -51,7 +51,7 @@ class EthereumRepository @Inject constructor(
         return ethereum.sendRequest(request)
     }
 
-    suspend fun getRand(seed: Long = System.currentTimeMillis()): String {
+    suspend fun getRand(seed: Long = System.currentTimeMillis(), min: Long, max: Long): String {
         if (ethereum.selectedAddress.isEmpty()) ethereum.connect()
         if (ethereum.chainId != CHAIN_ID) ethereum.switchEthereumChain(CHAIN_ID)
         val params: Map<String, String> = mapOf(
@@ -80,15 +80,17 @@ class EthereumRepository @Inject constructor(
         ethereum.connectWith(request)
     }
 
-    suspend fun tran(seed: Long = System.currentTimeMillis()): String? {
+    suspend fun tran(seed: Long = System.currentTimeMillis(), min: Long, max: Long): String? {
         if (ethereum.selectedAddress.isEmpty()) ethereum.connect()
         if (ethereum.chainId != CHAIN_ID) ethereum.switchEthereumChain(CHAIN_ID)
         val function = AbiFunction.parseSignature(
-            "function randWithRecord(uint256 userProvidedSeed) public returns (uint256)",
+            "function randWithRecord(uint256 userProvidedSeed, uint256 min, uint256 max) external returns (uint256)",
         )
         val data = function.encodeCall(
             arrayOf(
-                seed.toBigInteger()
+                seed.toBigInteger(),
+                min.toBigInteger(),
+                max.toBigInteger()
             )
         ).toString()
         val params = mapOf(

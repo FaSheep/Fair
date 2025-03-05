@@ -29,6 +29,10 @@ type GetRand {
 
   num: BigInt!
 
+  min: BigInt!
+
+  max: BigInt!
+
   blockNumber: BigInt!
 
   blockTimestamp: BigInt!
@@ -92,6 +96,38 @@ input GetRand_filter {
   num_in: [BigInt!]
 
   num_not_in: [BigInt!]
+
+  min: BigInt
+
+  min_not: BigInt
+
+  min_gt: BigInt
+
+  min_lt: BigInt
+
+  min_gte: BigInt
+
+  min_lte: BigInt
+
+  min_in: [BigInt!]
+
+  min_not_in: [BigInt!]
+
+  max: BigInt
+
+  max_not: BigInt
+
+  max_gt: BigInt
+
+  max_lt: BigInt
+
+  max_gte: BigInt
+
+  max_lte: BigInt
+
+  max_in: [BigInt!]
+
+  max_not_in: [BigInt!]
 
   blockNumber: BigInt
 
@@ -161,6 +197,10 @@ enum GetRand_orderBy {
   from
 
   num
+
+  min
+
+  max
 
   blockNumber
 

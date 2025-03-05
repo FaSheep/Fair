@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import kotlinx.coroutines.delay
 import org.fasheep.fair.core.model.data.DataDetail
 import org.fasheep.fair.core.model.data.HistoryItem
 import java.util.Date
@@ -57,6 +58,7 @@ internal fun HistoryRoute(
     var index by rememberSaveable(hash) { mutableStateOf(hash) }
     val connect by viewModel.connect.collectAsState()
     LaunchedEffect(connect) {
+        delay(1000)
         viewModel.checkConnect()
     }
     HistoryScreen(
@@ -132,45 +134,44 @@ fun HistoryDialog(
     val detail = details.find { it.hash == hash }
     AlertDialog(
         text = {
-            if (uiState is HistoryUiState.Shown) {
-                when (historyItem) {
-                    is HistoryItem.Assignment -> Text(
-                        """
+            when (historyItem) {
+                is HistoryItem.Assignment -> Text(
+                    """
                         Hash: ${historyItem.transactionHash}
                         
                         Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
                         
                         Data: ${historyItem.name.zip(historyItem.role)}
                     """.trimIndent()
-                    )
+                )
 
-                    is HistoryItem.Num -> Text(
-                        """
+                is HistoryItem.Num -> Text(
+                    """
                         Hash: ${historyItem.transactionHash}
                         
                         Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
                         
-                        Data: ${historyItem.value}
+                        Data: ${historyItem.value} (${historyItem.min}-${historyItem.max})
                     """.trimIndent()
-                    )
+                )
 
-                    is HistoryItem.Vote -> Column(Modifier.verticalScroll(scrollState)) {
-                        Box(
-                            modifier = Modifier
-                                .padding(top = 16.dp)
-                                .align(Alignment.CenterHorizontally)
-                        ) {
-                            Image(
-                                bitmap = BarcodeEncoder().encodeBitmap(
-                                    historyItem.voteId,
-                                    BarcodeFormat.QR_CODE,
-                                    400,
-                                    400
-                                ).asImageBitmap(), contentDescription = "QR Code"
-                            )
-                        }
-                        Text(
-                            """
+                is HistoryItem.Vote -> Column(Modifier.verticalScroll(scrollState)) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        Image(
+                            bitmap = BarcodeEncoder().encodeBitmap(
+                                historyItem.voteId,
+                                BarcodeFormat.QR_CODE,
+                                400,
+                                400
+                            ).asImageBitmap(), contentDescription = "QR Code"
+                        )
+                    }
+                    Text(
+                        """
                             Hash: ${historyItem.transactionHash}
                             
                             Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
@@ -181,32 +182,29 @@ fun HistoryDialog(
                             
                             Options: ${historyItem.options}
                         """.trimIndent()
-                        )
-                        if (showMore) {
-                            if (detail == null) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .align(Alignment.CenterHorizontally)
-                                        .padding(top = 20.dp)
-                                )
-                                LaunchedEffect(historyItem.voteId) {
-                                    onFetchDetail(historyItem)
-                                }
-                            } else if (detail is DataDetail.Vote) {
-                                Text(
-                                    """
-                                
-                                    Data: ${detail.data}
-                            """.trimIndent()
-                                )
+                    )
+                    if (showMore) {
+                        if (detail == null) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(top = 20.dp)
+                            )
+                            LaunchedEffect(historyItem.voteId) {
+                                onFetchDetail(historyItem)
                             }
+                        } else if (detail is DataDetail.Vote) {
+                            Text(
+                                """
+                                    
+                                    Data: ${detail.data}
+                                """.trimIndent()
+                            )
                         }
                     }
-
-                    null -> Text("null")
                 }
 
-
+                null -> Text("null")
             }
         },
         onDismissRequest = { onClick("") },
@@ -265,7 +263,7 @@ fun HistoryScreenPreview() {
                 HistoryItem.Assignment(1700021000212L, "a", listOf("a", "b"), listOf("A", "B")),
                 HistoryItem.Assignment(1700011000212L, "a", listOf("a", "b"), listOf("A", "B")),
                 HistoryItem.Assignment(1770011000212L, "a", listOf("a", "b"), listOf("A", "B")),
-                HistoryItem.Num(1760021251212L, "123123", "99999999999999999999")
+                HistoryItem.Num(1760021251212L, "123123", "99999999999999999999", "1", "2")
             )
         )
     HistoryScreen(
@@ -286,5 +284,5 @@ fun LoadingHistoryScreenPreview() {
 @Preview
 @Composable
 fun CardPreview() {
-    HistoryCard(modifier = Modifier, HistoryItem.Num(1766666666666L, "hash", "222"), {})
+    HistoryCard(modifier = Modifier, HistoryItem.Num(1766666666666L, "hash", "222", "1", "100"), {})
 }

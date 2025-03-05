@@ -2,13 +2,14 @@ package org.fasheep.fair.feature.sortition
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -18,10 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -49,13 +52,16 @@ internal fun SortitionScreen(
     isConnected: Boolean,
     num: String,
     onConnect: () -> Unit,
-    onTran: ((String) -> Unit) -> Unit,
+    onTran: (Long, Long, (String) -> Unit) -> Unit,
     callback: (String) -> Unit
 ) {
-    var onlineMode: Boolean by remember { mutableStateOf(isConnected) }
+//    var onlineMode: Boolean by remember { mutableStateOf(isConnected) }
+    var max by remember { mutableStateOf("") }
+    var min by remember { mutableStateOf("") }
     Surface(modifier = modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(bottom = 100.dp)
         ) {
             Text(
@@ -67,48 +73,58 @@ internal fun SortitionScreen(
                 text = num
             )
             TextField(
-                value = "",
-                onValueChange = {},
+                value = max,
+                onValueChange = { if (it.isDigitsOnly()) max = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                 label = {
                     Text("Max Value")
                 },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             TextField(
-                value = "",
-                onValueChange = {},
+                value = min,
+                onValueChange = { if (it.isDigitsOnly()) min = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                 label = {
                     Text("Min Value")
-                }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-            Row(
-                modifier = Modifier.padding(horizontal = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Switch(checked = onlineMode,
-                    onCheckedChange = {
-                        if (it) {
-                            if (isConnected) {
-                                onlineMode = true
-                            } else {
-                                onConnect()
-                            }
-                        } else {
-                            onlineMode = false
-                        }
-                    })
-                Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 5.dp), text = "Online Mode"
+            // TODO offline mode
+//            Row(
+//                modifier = Modifier.padding(horizontal = 14.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Switch(checked = onlineMode,
+//                    onCheckedChange = {
+//                        if (it) {
+//                            if (isConnected) {
+//                                onlineMode = true
+//                            } else {
+//                                onConnect()
+//                            }
+//                        } else {
+//                            onlineMode = false
+//                        }
+//                    })
+//                Text(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .padding(start = 5.dp), text = "Online Mode"
+//                )
+            Spacer(Modifier.height(10.dp))
+            Button(onClick = {
+                onTran(
+                    min.toLong(),
+                    max.toLong(),
+                    callback
                 )
-                Button(onClick = { if (onlineMode) onTran(callback) else onlineMode = true }) { Text("Tran") }
-            }
+            }) { Text("Draw a number") }
+//            }
         }
     }
 }
@@ -121,7 +137,7 @@ fun Preview() {
         isConnected = false,
         num = "N/A",
         onConnect = {},
-        onTran = {},
+        onTran = { _, _, _ -> },
         callback = {}
     )
 }

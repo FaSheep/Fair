@@ -31,15 +31,27 @@ class GraphRepository @Inject constructor(
 
     suspend fun findNumByAddress(address: String): List<Num> {
         val response = randomClient.query(NumByAddressQuery(Optional.present(address))).execute().data?.getRands?.map {
-            Num(it.blockTimestamp.toString(), it.transactionHash.toString(), it.num.toString())
+            Num(
+                it.blockTimestamp.toString(),
+                it.transactionHash.toString(),
+                it.num.toString(),
+                it.min.toString(),
+                it.max.toString()
+            )
         }
         return response ?: emptyList()
     }
 
     suspend fun findNumById(transactionHash: String): Num? {
-        val rands = randomClient.query(NumByIdQuery(Optional.present(transactionHash))).execute().data?.getRands
-        return if (rands.isNullOrEmpty()) null else rands.first()
-            .let { Num(it.blockTimestamp.toString(), it.transactionHash.toString(), it.num.toString()) }
+        return randomClient.query(NumByIdQuery(Optional.present(transactionHash))).execute().data?.getRand?.let {
+            Num(
+                it.blockTimestamp.toString(),
+                it.transactionHash.toString(),
+                it.num.toString(),
+                it.min.toString(),
+                it.max.toString()
+            )
+        }
     }
 
     suspend fun findAssignmentById(transactionHash: String): Assignment? {

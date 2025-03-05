@@ -11,7 +11,7 @@ internal fun Assignment.toItem(): HistoryItem.Assignment {
 }
 
 internal fun Num.toItem(): HistoryItem.Num {
-    return HistoryItem.Num(timestamp, hash, value)
+    return HistoryItem.Num(timestamp, hash, value, min, max)
 }
 
 internal fun Vote.toItem(): HistoryItem.Vote {

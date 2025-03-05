@@ -159,7 +159,7 @@ fun AddRoleDialog(
                 )
                 TextField(
                     value = num,
-                    onValueChange = { num = it },
+                    onValueChange = { if (it.isDigitsOnly()) num = it },
                     label = { Text("Number") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier
