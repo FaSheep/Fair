@@ -249,7 +249,9 @@ private fun RoleCard(modifier: Modifier = Modifier, name: String, number: Int, p
                 modifier = Modifier
                     .padding(vertical = 5.dp)
                     .fillMaxWidth(),
-                trackColor = Color.LightGray
+                trackColor = Color.LightGray,
+                gapSize = (-1).dp,
+                drawStopIndicator = {}
             )
         }
     }
