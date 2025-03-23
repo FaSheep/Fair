@@ -1,17 +1,14 @@
 package org.fasheep.fair.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.DrawableRes
+import org.fasheep.fair.R
 
 enum class TopLevelDestination(
-    val icon: ImageVector,
+    @DrawableRes val icon: Int,
     val description: String
 ) {
-    ASSIGNMENT(Icons.Default.Add, "assignment"),
-    VOTE(Icons.Default.Search, "vote"),
-    SORTITION(Icons.Default.Done, "sortition"),
-    HISTORY(Icons.Default.Search, "history"),
+    ASSIGNMENT(R.drawable.assignment, "assignment"),
+    VOTE(R.drawable.vote, "vote"),
+    SORTITION(R.drawable.random, "sortition"),
+    HISTORY(R.drawable.history, "history"),
 }

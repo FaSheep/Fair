@@ -34,7 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -64,6 +63,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -283,7 +283,7 @@ fun CastVoteContent(
                 trailingIcon = {
                     Row {
                         IconButton(onClick = { launchBarcodeScanner() }) {
-                            Icon(Icons.Default.Search, contentDescription = "Scan QR Code")
+                            Icon(painter = painterResource(R.drawable.scan), contentDescription = "Scan QR Code")
                         }
                         IconButton(onClick = { onFetchClick(inputVoteId) }, enabled = inputVoteId.length == 66) {
                             Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Fetch Data")
