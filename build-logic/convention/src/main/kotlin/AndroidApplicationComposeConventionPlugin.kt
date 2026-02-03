@@ -11,29 +11,24 @@ class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("com.android.application")
                 apply("org.jetbrains.kotlin.android")
+                apply("org.jetbrains.kotlin.plugin.compose")
             }
 
             extensions.configure<ApplicationExtension> {
                 buildFeatures {
                     compose = true
                 }
-
-                composeOptions {
-                    kotlinCompilerExtensionVersion = "1.5.1"
-                }
             }
 
             dependencies {
-                add("implementation", libs.findLibrary("androidx-ui").get())
-                add("implementation", libs.findLibrary("androidx-ui-graphics").get())
-                add("implementation", libs.findLibrary("androidx-ui-tooling-preview").get())
-                add("implementation", libs.findLibrary("androidx-material3").get())
-
-                add("implementation", libs.findLibrary("androidx-activity-compose").get())
-                add("implementation", platform(libs.findLibrary("androidx-compose-bom").get()))
-                add("implementation", libs.findLibrary("androidx-compose-navigation").get())
-
-                add("implementation", libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
+                "implementation"(libs.findLibrary("androidx-ui").get())
+                "implementation"(libs.findLibrary("androidx-ui-graphics").get())
+                "implementation"(libs.findLibrary("androidx-ui-tooling-preview").get())
+                "implementation"(libs.findLibrary("androidx-material3").get())
+                "implementation"(libs.findLibrary("androidx-activity-compose").get())
+                "implementation"(platform(libs.findLibrary("androidx-compose-bom").get()))
+                "implementation"(libs.findLibrary("androidx-compose-navigation").get())
+                "implementation"(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
             }
         }
     }

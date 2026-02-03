@@ -7,6 +7,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
@@ -31,24 +32,26 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             }
 
             tasks.withType<KotlinCompile>().configureEach {
-                kotlinOptions {
+                compilerOptions {
                     // Set JVM target to 11
-                    jvmTarget = JavaVersion.VERSION_11.toString()
+                    jvmTarget.set(JvmTarget.JVM_11)
                     // Treat all Kotlin warnings as errors (disabled by default)
                     // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
                     val warningsAsErrors: String? by project
-                    allWarningsAsErrors = warningsAsErrors.toBoolean()
-                    freeCompilerArgs = freeCompilerArgs + listOf(
-                        // Enable experimental coroutines APIs, including Flow
-                        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    allWarningsAsErrors.set(warningsAsErrors.toBoolean())
+                    freeCompilerArgs.set(
+                        freeCompilerArgs.get() + listOf(
+                            // Enable experimental coroutines APIs, including Flow
+                            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                        )
                     )
                 }
             }
 
             dependencies {
-                add("implementation", libs.findLibrary("androidx-core-ktx").get())
-                add("implementation", libs.findLibrary("androidx-lifecycle-runtime-ktx").get())
-                add("testImplementation", libs.findLibrary("kotlin-test").get())
+                "implementation"(libs.findLibrary("androidx-core-ktx").get())
+                "implementation"(libs.findLibrary("androidx-lifecycle-runtime-ktx").get())
+                "testImplementation"(libs.findLibrary("kotlin-test").get())
             }
         }
     }
