@@ -31,18 +31,18 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             }
 
             tasks.withType<KotlinCompile>().configureEach {
-                kotlinOptions {
-                    // Set JVM target to 11
-                    jvmTarget = JavaVersion.VERSION_11.toString()
-                    // Treat all Kotlin warnings as errors (disabled by default)
-                    // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
-                    val warningsAsErrors: String? by project
-                    allWarningsAsErrors = warningsAsErrors.toBoolean()
-                    freeCompilerArgs = freeCompilerArgs + listOf(
-                        // Enable experimental coroutines APIs, including Flow
-                        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                    )
-                }
+//                kotlinOptions {
+//                    // Set JVM target to 11
+//                    jvmTarget = JavaVersion.VERSION_11.toString()
+//                    // Treat all Kotlin warnings as errors (disabled by default)
+//                    // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
+//                    val warningsAsErrors: String? by project
+//                    allWarningsAsErrors = warningsAsErrors.toBoolean()
+//                    freeCompilerArgs = freeCompilerArgs + listOf(
+//                        // Enable experimental coroutines APIs, including Flow
+//                        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+//                    )
+//                }
             }
 
             dependencies {
