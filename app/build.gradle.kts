@@ -19,8 +19,5 @@ android {
 
 dependencies {
     implementation(project(":feature:assignment"))
-    implementation(project(":feature:vote"))
-    implementation(project(":feature:sortition"))
-    implementation(project(":feature:history"))
     implementation(libs.zxing.android.embedded)
 }

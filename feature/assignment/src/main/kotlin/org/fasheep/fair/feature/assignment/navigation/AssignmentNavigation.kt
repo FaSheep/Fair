@@ -4,16 +4,16 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import org.fasheep.fair.feature.assignment.AssignmentRoute
+import kotlinx.serialization.Serializable
+import org.fasheep.fair.feature.assignment.AssignmentScreen
 
-const val ASSIGNMENT_ROUTE = "assignment_route"
+@Serializable
+data object AssignmentRoute
 
-fun NavController.navigateToAssignment(navOptions: NavOptions) = navigate(ASSIGNMENT_ROUTE, navOptions)
+fun NavController.navigateToAssignment(navOptions: NavOptions) = navigate(AssignmentRoute, navOptions)
 
-fun NavGraphBuilder.assignmentScreen(callback: (String) -> Unit) {
-    composable(
-        route = ASSIGNMENT_ROUTE
-    ) {
-        AssignmentRoute(callback = callback)
+fun NavGraphBuilder.assignmentScreen() {
+    composable<AssignmentRoute> {
+        AssignmentScreen()
     }
 }

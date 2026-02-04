@@ -8,15 +8,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
-import org.fasheep.fair.feature.assignment.navigation.ASSIGNMENT_ROUTE
+import org.fasheep.fair.feature.assignment.navigation.AssignmentRoute
 import org.fasheep.fair.feature.assignment.navigation.assignmentScreen
-import org.fasheep.fair.feature.history.navigation.historyScreen
-import org.fasheep.fair.feature.history.navigation.navigateToHistory
-import org.fasheep.fair.feature.sortition.navigation.sortitionScreen
-import org.fasheep.fair.feature.vote.navigation.voteScreen
 import org.fasheep.fair.navigation.TopLevelDestination
 
 @Composable
@@ -25,21 +22,23 @@ fun FairApp(appState: FairAppState) {
         NavigationBar {
             TopLevelDestination.entries.forEach {
                 NavigationBarItem(
-                    selected = appState.currentRoute.isTopLevelDestinationInHierarchy(it),
+                    selected = appState.currentDestination.isTopLevelDestinationInHierarchy(it),
                     onClick = { appState.navigateToTopLevelDestination(it) },
-                    icon = { Icon(painter = painterResource(it.icon), contentDescription = it.description) })
+                    icon = {
+                        Icon(
+                            painter = painterResource(it.icon), contentDescription =
+                                stringResource(it.descriptionTextId)
+                        )
+                    })
             }
         }
     }) { innerPadding ->
         NavHost(
             modifier = Modifier.padding(innerPadding),
             navController = appState.navController,
-            startDestination = ASSIGNMENT_ROUTE
+            startDestination = AssignmentRoute
         ) {
-            assignmentScreen(callback = appState.navController::navigateToHistory)
-            voteScreen(onNavHistory = appState.navController::navigateToHistory)
-            sortitionScreen(callback = appState.navController::navigateToHistory)
-            historyScreen()
+            assignmentScreen()
         }
     }
 }

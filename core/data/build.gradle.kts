@@ -8,6 +8,5 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:blockchain"))
     implementation(project(":core:network"))
 }

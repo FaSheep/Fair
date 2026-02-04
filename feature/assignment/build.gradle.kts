@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.fair.android.library)
     alias(libs.plugins.fair.android.library.compose)
     alias(libs.plugins.fair.android.hilt)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -10,6 +11,5 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
-    implementation(project(":core:blockchain"))
-    implementation(project(":core:network"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 }

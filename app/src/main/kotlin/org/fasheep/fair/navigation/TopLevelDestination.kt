@@ -1,14 +1,24 @@
 package org.fasheep.fair.navigation
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import org.fasheep.fair.R
+import org.fasheep.fair.feature.assignment.navigation.AssignmentRoute
+import kotlin.reflect.KClass
 
 enum class TopLevelDestination(
     @DrawableRes val icon: Int,
-    val description: String
+    @StringRes val descriptionTextId: Int,
+    val route: KClass<*>,
+    val baseRoute: KClass<*> = route
 ) {
-    ASSIGNMENT(R.drawable.assignment, "assignment"),
-    VOTE(R.drawable.vote, "vote"),
-    SORTITION(R.drawable.random, "sortition"),
-    HISTORY(R.drawable.history, "history"),
+    ASSIGNMENT(
+        icon = R.drawable.assignment,
+        descriptionTextId = R.string.app_name,
+        route = AssignmentRoute::class,
+        baseRoute = AssignmentRoute::class
+    ),
+//    VOTE(R.drawable.vote, R.string.app_name),
+//    SORTITION(R.drawable.random, R.string.app_name),
+//    HISTORY(R.drawable.history, R.string.app_name),
 }

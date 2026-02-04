@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.dagger) apply false
     alias(libs.plugins.apollographql.apollo) apply false
+    alias(libs.plugins.serialization) apply false
 }
