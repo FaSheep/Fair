@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="history_info">Hash: %1$s\n\nTime: %2$s</string>
+    <string name="history_data">\nData: %1$s</string>
+    <string name="history_num_info">\nHash: %1$s\n\nTime: %2$s\n\nData: %3$s (%4$s-%5$s)</string>
+    <string name="history_vote_info">\nHash: %1$s\n\nTime: %2$s\n\nEnd Time: %3$s\n\nVote ID: %4$s\n\nOptions: %5$s</string>
+    <string name="history_vote_data">\nSummary: %1$s\n\nData: %2$s</string>
+    <string name="history_show_more">Show more</string>
+</resources>

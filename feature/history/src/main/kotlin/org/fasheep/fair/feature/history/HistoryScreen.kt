@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -151,28 +152,26 @@ fun HistoryDialog(
                         )
                     }
                     Text(
-                        """
-                            Hash: ${historyItem.transactionHash}
-                            
-                            Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
-                        """.trimIndent()
+                        stringResource(
+                            R.string.history_info,
+                            historyItem.transactionHash,
+                            SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))
+                        )
                     )
                     if (showMore) Text(
-                        """
-                            
-                            Data: ${historyItem.name.zip(historyItem.role)}
-                        """.trimIndent()
+                        stringResource(R.string.history_data, historyItem.name.zip(historyItem.role))
                     )
                 }
 
                 is HistoryItem.Num -> Text(
-                    """
-                        Hash: ${historyItem.transactionHash}
-                        
-                        Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
-                        
-                        Data: ${historyItem.value} (${historyItem.min}-${historyItem.max})
-                    """.trimIndent()
+                    stringResource(
+                        R.string.history_num_info,
+                        historyItem.transactionHash,
+                        SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp)),
+                        historyItem.value,
+                        historyItem.min,
+                        historyItem.max
+                    )
                 )
 
                 is HistoryItem.Vote -> Column(Modifier.verticalScroll(scrollState)) {
@@ -191,17 +190,14 @@ fun HistoryDialog(
                         )
                     }
                     Text(
-                        """
-                            Hash: ${historyItem.transactionHash}
-                            
-                            Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp))}
-                            
-                            End Time: ${SimpleDateFormat.getInstance().format(Date(historyItem.endTime * 1000))}
-                            
-                            Vote ID: ${historyItem.voteId}
-                            
-                            Options: ${historyItem.options}
-                        """.trimIndent()
+                        stringResource(
+                            R.string.history_vote_info,
+                            historyItem.transactionHash,
+                            SimpleDateFormat.getInstance().format(Date(historyItem.blockTimestamp)),
+                            SimpleDateFormat.getInstance().format(Date(historyItem.endTime * 1000)),
+                            historyItem.voteId,
+                            historyItem.options
+                        )
                     )
                     if (showMore) {
                         if (detail == null) {
@@ -224,12 +220,7 @@ fun HistoryDialog(
                                 voteCounts[optionStr] = voteCounts.getOrDefault(optionStr, 0) + 1
                             }
                             Text(
-                                """
-                                    
-                                    Summary: $voteCounts
-                                    
-                                    Data: ${detail.data}
-                                """.trimIndent()
+                                stringResource(R.string.history_vote_data, voteCounts, detail.data).trimIndent()
                             )
                         }
                     }
@@ -241,7 +232,7 @@ fun HistoryDialog(
         onDismissRequest = { onClick("") },
         dismissButton = {
             if (!showMore && (historyItem is HistoryItem.Vote || historyItem is HistoryItem.Assignment)) {
-                TextButton(onClick = { showMore = true }) { Text("Show more") }
+                TextButton(onClick = { showMore = true }) { Text(stringResource(R.string.history_show_more)) }
             }
         },
         confirmButton = { TextButton(onClick = { onClick("") }) { Text("OK") } }

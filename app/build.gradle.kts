@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "org.fasheep.fair"
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 4
+        versionName = "1.0.0-alpha4"
 
         testInstrumentationRunner =
             "org.fasheep.fair.testing.TestRunner"
