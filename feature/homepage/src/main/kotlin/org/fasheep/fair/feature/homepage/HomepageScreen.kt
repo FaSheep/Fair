@@ -1,16 +1,16 @@
-package org.fasheep.fair.feature.assignment
+package org.fasheep.fair.feature.homepage
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-internal fun AssignmentScreen(
+internal fun HomepageScreen(
     modifier: Modifier = Modifier,
-    viewModel: AssignmentViewModel = hiltViewModel()
+    viewModel: HomepageViewModel = hiltViewModel()
 ) {
-    AssignmentScreenContent()
+    HomepageScreenContent()
 }
 
 @Composable
-internal fun AssignmentScreenContent() {}
+internal fun HomepageScreenContent() {}

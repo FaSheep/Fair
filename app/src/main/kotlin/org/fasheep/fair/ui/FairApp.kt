@@ -12,8 +12,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
-import org.fasheep.fair.feature.assignment.navigation.AssignmentRoute
-import org.fasheep.fair.feature.assignment.navigation.assignmentScreen
+import org.fasheep.fair.feature.homepage.navigation.HomepageRoute
+import org.fasheep.fair.feature.homepage.navigation.homepageScreen
 import org.fasheep.fair.navigation.TopLevelDestination
 
 @Composable
@@ -36,9 +36,9 @@ fun FairApp(appState: FairAppState) {
         NavHost(
             modifier = Modifier.padding(innerPadding),
             navController = appState.navController,
-            startDestination = AssignmentRoute
+            startDestination = HomepageRoute
         ) {
-            assignmentScreen()
+            homepageScreen()
         }
     }
 }

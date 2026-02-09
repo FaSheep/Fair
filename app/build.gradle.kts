@@ -18,6 +18,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:assignment"))
+    implementation(project(":feature:homepage"))
     implementation(libs.zxing.android.embedded)
 }

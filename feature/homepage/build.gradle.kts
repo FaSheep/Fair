@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "org.fasheep.fair.feature.assignment"
+    namespace = "org.fasheep.fair.feature.homepage"
 }
 
 dependencies {

@@ -24,7 +24,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fair"
 include(":app")
-include(":feature:assignment")
+include(":feature:homepage")
 include(":core:data")
 include(":core:model")
 include(":core:network")

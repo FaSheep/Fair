@@ -8,10 +8,9 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import org.fasheep.fair.feature.assignment.navigation.navigateToAssignment
+import org.fasheep.fair.feature.homepage.navigation.navigateToHomepage
 import org.fasheep.fair.navigation.TopLevelDestination
 
 @Composable
@@ -70,7 +69,7 @@ class FairAppState(
         }
 
         when (topLevelDestination) {
-            TopLevelDestination.ASSIGNMENT -> navController.navigateToAssignment(topLevelNavOptions)
+            TopLevelDestination.HOMEPAGE -> navController.navigateToHomepage(topLevelNavOptions)
 //            TopLevelDestination.VOTE -> navController.navigateToVote(topLevelNavOptions)
 //            TopLevelDestination.SORTITION -> navController.navigateToSortition(topLevelNavOptions)
 //            TopLevelDestination.HISTORY -> navController.navigateToHistory(navOptions = topLevelNavOptions)
